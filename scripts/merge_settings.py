@@ -76,6 +76,7 @@ def main():
         ("SubagentStop", "*", ["subagent-guard.sh"]),
         ("Notification", "*", ["notify-alert.sh"]),
         ("Stop", "*", ["verify-turn.sh"]),
+        ("SessionEnd", "*", ["retrospective.sh"]),
     ]
 
     new = dict(existing)
