@@ -10,6 +10,8 @@ set -u
 H="$(command -v claude >/dev/null 2>&1 && claude --version 2>/dev/null | head -1 || echo 'NOT FOUND')"
 CFG_HOME="${CLAUDE_CONFIG_DIR:-$HOME/.claude}"
 P="$(command -v python || command -v python3 || echo '')"
+# Script's own dir, captured BEFORE any cd (section 5 changes cwd).
+REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" 2>/dev/null && pwd)"
 
 pass=0; fail=0
 ok()   { printf '  [OK]   %s\n' "$1"; pass=$((pass+1)); }
@@ -74,6 +76,18 @@ for t in test_danger_guard.py test_dep_guard.py test_ship_gate.py; do
     bad "self-check FAILED: $t"
   fi
 done
+
+echo "-- 6. repo CI YAML valid (the colon-class error dies here, not in CI) --"
+WF="$REPO_DIR/.github/workflows/validate.yml"
+if [ ! -f "$WF" ]; then
+  ok "no workflow YAML to check"
+elif ! "$P" -c "import yaml" 2>/dev/null; then
+  ok "pyyaml not installed — YAML check skipped (install with: python -m pip install pyyaml)"
+elif "$P" -c "import yaml; yaml.safe_load(open(r'$WF'.replace('/c/','C:/').replace('/C:/','C:/')))" 2>/dev/null; then
+  ok "workflow YAML parses"
+else
+  bad "workflow YAML broken — the exact error that redded main in v1.4.0"
+fi
 
 echo ""
 echo "== result: $pass ok, $fail failed =="

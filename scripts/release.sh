@@ -18,6 +18,13 @@ run() {
   if [ "$DRY" = "1" ]; then printf '  (dry-run) would: %s\n' "$*"; else "$@"; fi
 }
 
+# 0. branch discipline: never release straight from main — the v1.4.0 lesson.
+BRANCH="$(git branch --show-current)"
+if [ "$BRANCH" = "main" ]; then
+  die "releasing from main is forbidden. Work on a feature branch: git checkout -b release/$VERSION, then re-run. (CI must validate the branch before it merges to main.)"
+fi
+[ "$DRY" = "1" ] && say "dry-run: branch check passed (on $BRANCH)"
+
 # 1. working tree clean?
 if ! git diff --quiet; then die "working tree dirty — commit or stash first"; fi
 [ "$DRY" = "1" ] && say "dry-run: tree clean check passed"
