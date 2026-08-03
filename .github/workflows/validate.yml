@@ -24,13 +24,15 @@ jobs:
         run: for f in hooks/test_*.py; do python3 "$f"; done
       - name: Plan-check (open items must not ship under a release)
         run: python3 scripts/plan-check.py --release
-      - name: "Observe: claude-health against fixture HOME"
+      - name: "Observe: install to fixture HOME then claude-health"
         run: |
-          mkdir -p /tmp/fh/.claude/hooks
-          cp hooks/*.sh hooks/*.py hooks/*.mjs /tmp/fh/.claude/hooks/
+          # Real end-to-end: install into a fake HOME, then health-check the
+          # installed state. This catches a release that breaks install/health.
+          bash scripts/install.sh
           bash claude-health.sh
         env:
           HOME: /tmp/fh
+          CLAUDE_CONFIG_DIR: /tmp/fh/.claude
       - name: Install dry-run (linux)
         run: bash scripts/install.sh --dry-run
         env:
