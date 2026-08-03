@@ -36,6 +36,7 @@ check("real npm add", detect("npm add express") == "package")
 check("real pip install", detect("pip install requests") == "pip")
 check("pnpm add -D typescript", detect("pnpm add -D typescript") == "package")
 check("scoped add", detect("pnpm add @scope/pkg") == "package")
+check("flag-then-pkg captures pkg not flag", detect("pnpm add --save-dev typescript") == "package")
 
 # must NOT detect: prose / config / heredoc / comment / bare installs
 check("quoted mention", detect('echo "npm install express"') is None)

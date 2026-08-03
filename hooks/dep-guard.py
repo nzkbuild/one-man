@@ -19,11 +19,11 @@ import re
 import sys
 
 # `add` is the unambiguous "install a NEW dependency" verb; `install`/`i`
-# appear in prose constantly ("run pnpm install to set up") and fire falsely.
-# So detect only `add <pkg>` (which grabs lodash, @scope/pkg, any real name)
-# plus `pip install <pkg>`. This keeps the nudge useful with zero prose noise.
+# appear in prose and fire falsely. So detect `add <pkg>`, skipping leading
+# flags (`pnpm add -D husky` -> husky, not -D), plus `pip install <pkg>`.
+# Prose "add to/the" is rare and this is a nudge, not a gate — bounded noise.
 DEP_PATTERNS = [
-    (re.compile(r"\b(pnpm|npm|yarn)\s+add\s+(\S+)", re.IGNORECASE), "package"),
+    (re.compile(r"\b(pnpm|npm|yarn)\s+add\s+(?:(?:--?\w+)\s+)*(\S+)", re.IGNORECASE), "package"),
     (re.compile(r"\b(pip3?)\s+install\s+(\S+)", re.IGNORECASE), "pip"),
 ]
 
