@@ -52,6 +52,9 @@ def changed_files(cwd: Path):
     for root, dirs, files in os.walk(cwd):
         dirs[:] = [d for d in dirs if d not in SKIP_DIRS and not d.startswith(".")]
         for name in files:
+            # Skip tests + hook sources: fixtures/pattern strings are legit.
+            if name.startswith(("test_", "perf-guard", "review-gate", "understand-guard")):
+                continue
             p = Path(root) / name
             if p.suffix in SOURCE_EXTS:
                 try:
