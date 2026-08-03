@@ -83,6 +83,31 @@ if (Test-Path (Join-Path $ClaudeHome "settings.json")) {
     python (Join-Path $Repo "scripts\merge_settings.py") $ClaudeHome $ClaudeHome --init
 }
 
+# ---------- Step 7.5: plugins + design skills (from manifest, per-machine) ----------
+if (Get-Command claude -ErrorAction SilentlyContinue) {
+    Say "Install plugins from manifest"
+    $manifest = Get-Content (Join-Path $Repo "install.manifest.json") -Raw | ConvertFrom-Json
+    foreach ($p in $manifest.plugins) {
+        if ($DryRun) { Write-Host "  (dry-run) would: claude plugins install $p" }
+        else {
+            $ans = Read-Host "  Install plugin $p? [Y/n]"
+            if ($ans -notin @("n", "N")) { claude plugins install $p 2>$null; Say "  installed $p" }
+            else { Say "  skip $p" }
+        }
+    }
+    Say "Symlink design skills from ~/.agents/skills (when present)"
+    foreach ($s in $manifest.designSkills) {
+        $src = Join-Path $env:USERPROFILE ".agents\skills\$s"
+        $dst = Join-Path $ClaudeHome "skills\$s"
+        if (Test-Path $src) {
+            if ($DryRun) { Write-Host "  (dry-run) would: ln -s $s" }
+            elseif (-not (Test-Path $dst)) { New-Item -ItemType SymbolicLink -Path $dst -Target $src -ErrorAction SilentlyContinue | Out-Null }
+        }
+    }
+} else {
+    Warn "claude CLI not found - skipping plugin/design-skill install (run after installing Claude Code)"
+}
+
 # ---------- Step 8: validate (real run only; dry-run must not execute python) ----------
 if (-not $DryRun) {
     Say "Validate hook wiring"

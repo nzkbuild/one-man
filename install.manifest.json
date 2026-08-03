@@ -1,0 +1,36 @@
+{
+  "version": "1.0.0",
+  "description": "The reproducible 'local == one-man' spec. The installer consumes this to give a fresh machine the exact plugin + skill set this repo was built from. Content is NOT vendored — plugins install from their marketplaces, design skills from their source. This manifest carries only names, no code, no personal data.",
+  "plugins": [
+    "rust-analyzer-lsp@claude-plugins-official",
+    "superpowers@claude-plugins-official",
+    "typescript-lsp@claude-plugins-official",
+    "vercel@claude-plugins-official",
+    "ponytail@ponytail",
+    "context-mode@context-mode"
+  ],
+  "marketplaces": {
+    "ponytail": {
+      "source": { "source": "github", "repo": "DietrichGebert/ponytail" }
+    },
+    "context-mode": {
+      "source": { "source": "github", "repo": "mksglu/context-mode" }
+    }
+  },
+  "designSkills": [
+    "brandkit",
+    "design-taste-frontend",
+    "find-skills",
+    "full-output-enforcement",
+    "gpt-taste",
+    "high-end-visual-design",
+    "imagegen-frontend-mobile",
+    "imagegen-frontend-web",
+    "image-to-code",
+    "industrial-brutalist-ui",
+    "minimalist-ui",
+    "redesign-existing-projects",
+    "stitch-design-taste"
+  ],
+  "designSkillSource": "~/.agents/skills/<name> — symlinked into ~/.claude/skills/ by the installer when present; these are an external corpus, not shipped by this repo."
+}

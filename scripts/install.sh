@@ -83,12 +83,39 @@ else
   python3 "$REPO/scripts/merge_settings.py" "$CLAUDE_HOME" "$CLAUDE_HOME" --init
 fi
 
+# ---------- Step 7.5: plugins + design skills (from manifest, per-machine) ----------
+if command -v claude >/dev/null 2>&1; then
+  say "Install plugins from manifest (selector: y/n per plugin)"
+  for p in $(python3 -c "
+import json
+m = json.load(open('$REPO/install.manifest.json'))
+print('\n'.join(m['plugins']))" 2>/dev/null); do
+    if [ "$DRY" = "1" ]; then
+      printf '  (dry-run) would: claude plugins install %s\n' "$p"
+    else
+      read -r -p "  Install plugin $p? [Y/n] " ans </dev/tty
+      case "$ans" in n|N) echo "  skip $p";; *) claude plugins install "$p" 2>/dev/null && echo "  installed $p";; esac
+    fi
+  done
+  say "Symlink design skills from ~/.agents/skills (when present)"
+  for s in $(python3 -c "
+import json
+m = json.load(open('$REPO/install.manifest.json'))
+print('\n'.join(m['designSkills']))" 2>/dev/null); do
+    if [ -d "$HOME/.agents/skills/$s" ]; then
+      [ "$DRY" = "1" ] && printf '  (dry-run) would: ln -s %s\n' "$s" || { [ -e "$CLAUDE_HOME/skills/$s" ] || ln -s "$HOME/.agents/skills/$s" "$CLAUDE_HOME/skills/$s"; }
+    fi
+  done
+else
+  say "claude CLI not found — skipping plugin/design-skill install (run after installing Claude Code)"
+fi
+
 # ---------- Step 8: validate ----------
 say "Validate hook wiring"
 python3 "$CLAUDE_HOME/hooks/settings-validate.py" < /dev/null >/dev/null 2>&1
 python3 "$CLAUDE_HOME/hooks/hook-health.py" < /dev/null >/dev/null 2>&1
 say "Hook self-checks:"
-(cd "$CLAUDE_HOME/hooks" && python3 test_danger_guard.py && python3 test_dep_guard.py && python3 test_ship_gate.py)
+(cd "$CLAUDE_HOME/hooks" && python3 test_danger_guard.py && python3 test_dep_guard.py && python3 test_ship_gate.py && python3 test_plan_check.py 2>/dev/null)
 
 # ---------- Step 9: done ----------
 say "Install complete. Restart Claude Code to bind settings permissions."
