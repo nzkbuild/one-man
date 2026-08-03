@@ -14,7 +14,7 @@
 |---|---|---|---|
 | E1 | parse `~/.claude/settings.json` hooks | Enumerate wired hooks | 32 wired entries, 10 events |
 | E2 | `node test/run-tests.js` | Run all hook self-checks | 12/12 PASS |
-| E3 | grep repo for `sk-*`, `[redacted email]`, `C:\Users\[redacted]`, `100.127.*` | Personal-data leak scan | **empty** (no leak) |
+| E3 | grep repo for API-key patterns, email, local paths, private-IP pattern | Personal-data leak scan | **empty** (no leak) |
 | E4 | count hooks/scripts on disk | Inventory shipped vs personal | 21 hooks + 6 scripts ship; keys/memory never |
 | E5 | grep hooks for `fail-open`/`sys.exit(0)` vs `sys.exit(2)` | Fail-open vs gate count | 21 fail-open, 4 gates |
 | E6 | `gh run list` last 5 | CI history | success, success, **failure, failure**, success |
