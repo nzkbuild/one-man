@@ -45,7 +45,7 @@ BARE_IO = re.compile(r"\bopen\s*\([^)]*\)\s*(?!\s*try)")
 
 
 sys.path.insert(0, str(Path(__file__).parent / "lib"))
-import scan as _scan
+import scan as _scan  # noqa: E402 — local lib, path insert required
 
 def changed_files(cwd: Path):
     return _scan.changed_files(cwd, window_min=CHANGED_WINDOW_MIN,
@@ -86,6 +86,17 @@ def review_file(p: Path, rel: Path):
     return blocking, guide
 
 
+def _task_risk():
+    """Read the current task's risk from the evidence record (M3)."""
+    try:
+        sys.path.insert(0, str(Path(__file__).parent / "lib"))
+        import evidence as _ev
+        rec = _ev.read_record("current")
+        return (rec or {}).get("risk", "low")
+    except Exception:
+        return "low"
+
+
 def main():
     raw = os.environ.get("HOOK_INPUT", "")
     cwd = Path.cwd()
@@ -94,6 +105,31 @@ def main():
             data = json.loads(raw)
             if data.get("cwd"):
                 cwd = Path(data["cwd"])
+        except Exception:
+            pass
+
+    risk = _task_risk()
+
+    # v1.5.0 M5: high-risk tasks require context-isolated review. The gate
+    # cannot spawn agents — it REQUIRES the isolation as a completion
+    # condition: the model must delegate to a fresh-context subagent given
+    # only the diff + task record + repo conventions, then record the
+    # findings in the evidence store. Absent that record, the gate blocks.
+    if risk == "high":
+        try:
+            sys.path.insert(0, str(Path(__file__).parent / "lib"))
+            import evidence as _ev
+            rec = _ev.read_record("current") or {}
+            ev = rec.get("evidence", [])
+            if not any(e.get("kind") == "isolated_review" for e in ev):
+                print(
+                    "## High-risk change requires context-isolated review.\n"
+                    "Delegate to a fresh subagent with ONLY: the diff, this task's "
+                    "record, and the repo conventions (no implementation context). "
+                    "Record the findings as evidence kind=isolated_review.",
+                    file=sys.stderr,
+                )
+                sys.exit(2)
         except Exception:
             pass
 

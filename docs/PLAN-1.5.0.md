@@ -131,9 +131,9 @@ One new artifact, three changes, zero new plugins/hooks-of-new-kind:
 - **AC:** medium/high with missing/failed/stale evidence blocks done; low passes; re-edit → stale → blocks; auditable override passes.
 - **Result (verified):** hooks/lib/gate.py — obligations must be backed by non-stale evidence (state-hash re-check); override recorded as justification. Wired into verify-turn Stop gate. 8-assertion gate self-check + end-to-end block verified; 15/15 runner.
 
-### M5 — context-isolated review
-- **AC:** high-risk task triggers a fresh-context review; findings land in the evidence store; review context excludes implementation history.
-- **Test:** fixture — high-risk task → review record present; assert the review prompt contains only diff+task+conventions (no prior turns).
+### M5 — context-isolated review ✅ DONE
+- **AC:** high-risk tasks require context-isolated review (fresh subagent: diff+task+conventions only); findings recorded as evidence kind=isolated_review; gate blocks without it.
+- **Result (verified):** review-gate blocks high-risk without isolated_review evidence, passes with it; 3 new assertions (9 total in review-gate test).
 
 ### M6 — criticality + CI
 - **AC:** `one-man.controls.json` declares criticality; safety control fails closed when its own code breaks (fixture); CI job runs the evidence gate on a fixture task and passes.

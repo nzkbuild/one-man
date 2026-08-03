@@ -1,7 +1,10 @@
 #!/usr/bin/env python3
 """Self-check for review-gate.py — defect detection."""
 import importlib.util
+import io
+import sys
 import tempfile
+from contextlib import redirect_stderr
 from pathlib import Path
 
 _spec = importlib.util.spec_from_file_location("rg", Path(__file__).parent / "review-gate.py")
@@ -44,5 +47,36 @@ check("dup block guides", any("duplicated" in x for x in g))
 # clean code: no findings
 b, g = review("def add(a, b):\n    return a + b\n")
 check("clean py silent", not b and not g)
+
+
+# --- v1.5.0 M5: context-isolated review for high-risk ---
+sys.path.insert(0, str(Path(__file__).parent / "lib"))
+import evidence as _ev
+
+def run_gate(risk, evidence_list):
+    """Run review-gate main() with a task record; return (exit, stderr)."""
+    with tempfile.TemporaryDirectory() as tmp:
+        _ev.EVIDENCE_DIR = Path(tmp)
+        _ev.write_record("current", {"type": "bug", "risk": risk, "evidence": evidence_list})
+        buf = io.StringIO()
+        with redirect_stderr(buf):
+            try:
+                _rg.main()
+                return 0, buf.getvalue()
+            except SystemExit as e:
+                return e.code, buf.getvalue()
+
+# high-risk, no isolated review -> blocked
+code, out = run_gate("high", [])
+check("high-risk requires isolated review", code == 2)
+check("isolation requested", "isolated review" in out)
+
+# high-risk WITH isolated review evidence -> passes (no isolation block)
+code, out = run_gate("high", [{"kind": "isolated_review", "result": "reviewed", "ts": 1}])
+check("isolated review recorded passes", code == 0)
+
+# low-risk -> no isolation requirement
+code, out = run_gate("low", [])
+check("low-risk no isolation needed", code == 0)
 
 print(f"OK: {PASS} assertions passed")
