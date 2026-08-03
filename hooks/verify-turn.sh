@@ -66,8 +66,9 @@ fi
 # Ship-gate (second half of the Verify-turn gate): scan changed source for
 # TODO/FIXME, console.log/debugger, commented-out code, empty catches. Red test
 # suite can't see these. Exit 2 if any are found. Fail-safe: any error -> exit 0.
-if [ -n "$PY" ] && "$PY" -c 'import importlib.util; importlib.util.spec_from_file_location("sg", r"C:\Users\nbzkr\.claude\hooks\ship-gate.py")' >/dev/null 2>&1; then
-  "$PY" "$( cd "${BASH_SOURCE[0]%/*}" && pwd )/ship-gate.py" <<< "$HOOK_INPUT" 2>&1
+SG="$( cd "${BASH_SOURCE[0]%/*}" && pwd )/ship-gate.py"
+if [ -n "$PY" ] && [ -f "$SG" ]; then
+  "$PY" "$SG" <<< "$HOOK_INPUT" 2>&1
   SHIP_EXIT=$?
   if [ "$SHIP_EXIT" = "2" ]; then
     exit 2

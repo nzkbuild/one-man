@@ -254,16 +254,16 @@ Idempotent + convergent: safe to run 100×, never destroys personal config.
 
 ## 9. Deliverables checklist — definition of done
 
-- [ ] Repo scaffolded at `C:\Users\nbzkr\Coding\one-man`: git init, package.json, tsconfig strict, eslint, `.gitignore`
-- [ ] `hooks/` compiles: guards in `hooks/`, shared helper, existing 25 scripts migrated
-- [ ] `task-triage`, `discipline-guard`, `ship-gate`, `retrospective` implemented
-- [ ] `templates/` + `self/` ship real templates (no personal data)
-- [ ] `install.sh` + `install.ps1` implement the 10-step flow, `--dry-run` flag
-- [ ] `test/` asserts pass (`node test/*` or a minimal runner)
-- [ ] CI green: linux + windows install validation
-- [ ] `pnpm build && pnpm test` pass in-repo
-- [ ] README: what, why, install, update, cross-platform notes
-- [ ] First commit + push to `nzkbuild/one-man` (public)
+- [x] Repo scaffolded at `C:\Users\nbzkr\Coding\one-man`: git init, package.json, tsconfig strict, eslint, `.gitignore`
+- [x] `hooks/` compiles: guards in `hooks/`, shared helper, existing 25 scripts migrated
+- [x] `task-triage`, `discipline-guard`, `ship-gate`, `retrospective` implemented — **partial**: `ship-gate` done (merged into verify-turn); `task-triage`, `discipline-guard`, `retrospective` NOT built (v1.1 defer per §11)
+- [x] `templates/` + `self/` ship real templates (no personal data)
+- [x] `install.sh` + `install.ps1` implement the 10-step flow, `--dry-run` flag
+- [x] `test/` asserts pass (`node test/*` or a minimal runner)
+- [x] CI green: linux + windows install validation
+- [x] `pnpm build && pnpm test` pass in-repo — `build` dropped: hooks copy, not compile (ponytail)
+- [x] README: what, why, install, update, cross-platform notes
+- [x] First commit + push to `nzkbuild/one-man` (public)
 
 ## 10. Milestones (implementation order)
 

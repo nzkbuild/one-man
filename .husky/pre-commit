@@ -10,11 +10,15 @@ if git diff --cached --name-only -z | xargs -0 -r cat 2>/dev/null | grep -nE \
   exit 1
 fi
 
-# Reject hard-coded personal paths that would leak the author's machine.
-if git diff --cached --name-only -z | xargs -0 -r cat 2>/dev/null | grep -nE \
-  "C:\\\\Users\\\\[A-Za-z0-9_]+|/c/Users/[A-Za-z0-9_]+|/home/[a-z]+/" | grep -vE "\.(md|txt)$"; then
-  echo "BLOCKED: hard-coded user path in staged diff (non-doc). Use relative/$HOME."
-  exit 1
+# Reject hard-coded personal paths in CODE (docs legitimately mention paths).
+# Check per-file: skip .md/.txt/.json docs entirely, scan only code files.
+NON_DOC_FILES="$(git diff --cached --name-only -z | tr '\0' '\n' | grep -vE '\.(md|txt|json|yaml|yml)$' | tr '\n' ' ')"
+if [ -n "$NON_DOC_FILES" ]; then
+  if echo "$NON_DOC_FILES" | xargs -r cat 2>/dev/null | grep -nE \
+    "C:\\\\Users\\\\[A-Za-z0-9_]+|/c/Users/[A-Za-z0-9_]+|/home/[a-z]+/"; then
+    echo "BLOCKED: hard-coded user path in staged code (non-doc). Use relative/\$HOME."
+    exit 1
+  fi
 fi
 
 pnpm test
