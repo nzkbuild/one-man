@@ -69,7 +69,7 @@ def main():
         ("SessionStart", "startup|resume", ["context-mode-cache-heal.mjs"]),
         # Mid-turn
         ("PreCompact", "*", ["precompact-checkpoint.sh"]),
-        ("UserPromptSubmit", "*", ["prompt-guard.sh", "phase-gate.sh"]),
+        ("UserPromptSubmit", "*", ["task-triage.sh", "prompt-guard.sh", "phase-gate.sh"]),
         ("PreToolUse", "Bash|PowerShell|Write|Edit|NotebookEdit", ["danger-guard.sh"]),
         ("PostToolUse", "Write|Edit|NotebookEdit", ["verify-edit.sh"]),
         ("PostToolUse", "Bash|PowerShell", ["dep-guard.sh"]),
