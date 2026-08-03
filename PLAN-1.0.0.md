@@ -256,7 +256,7 @@ Idempotent + convergent: safe to run 100×, never destroys personal config.
 
 - [x] Repo scaffolded at `C:\Users\nbzkr\Coding\one-man`: git init, package.json, tsconfig strict, eslint, `.gitignore`
 - [x] `hooks/` compiles: guards in `hooks/`, shared helper, existing 25 scripts migrated
-- [ ] `task-triage`, `discipline-guard`, `ship-gate`, `retrospective` implemented — **partial**: `ship-gate` done (merged into verify-turn); `task-triage`, `discipline-guard`, `retrospective` NOT built (v1.1 defer per §11)
+- [x] `task-triage`, `discipline-guard`, `ship-gate`, `retrospective` implemented (v1.2.0)
 - [x] `templates/` + `self/` ship real templates (no personal data)
 - [x] `install.sh` + `install.ps1` implement the 10-step flow, `--dry-run` flag
 - [x] `test/` asserts pass (`node test/*` or a minimal runner)

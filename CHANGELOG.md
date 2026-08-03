@@ -5,6 +5,26 @@ All notable changes to one-man. Format: Keep a Changelog
 
 ## [Unreleased]
 
+## [1.2.0] - 2026-08-04
+
+### Added
+- `retrospective` (SessionEnd): session stats recorder -> ~/.claude/self/stats.json
+  (bounded at 500). The measurement half of the feedback loop.
+- `task-triage` (UserPromptSubmit): prompt classifier (bug/feature/refactor/question/
+  chore/design) + skill router via skills.flow.json. Pre-mortem + exit criteria injected.
+- `discipline-guard` (PreToolUse): anti-slop nudges — wide-blast-radius-without-design,
+  reuse-first on mkdir, tests-missing-after-edits.
+- `skills.flow.json`: the systematic-reuse routing table (design -> brandkit/
+  design-taste/minimalist-ui chain; bug -> systematic-debugging; etc). Copied by
+  installers; consumed by task-triage.
+- CLAUDE.md.global: anti-slop principle — idle skills are the gap; mistakes repeated
+  are process failures.
+
+### Fixed
+- discipline-guard no longer flags git add/commit (VCS bookkeeping is not a design
+  decision).
+
+
 ## [1.1.0] - 2026-08-04
 
 ### Added
