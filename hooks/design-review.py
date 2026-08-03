@@ -15,12 +15,10 @@ import json
 import os
 import re
 import sys
-import time
 from pathlib import Path
 
 WINDOW_MIN = 10
 UI_EXTS = {".html", ".tsx", ".jsx", ".vue", ".svelte", ".css", ".scss"}
-SKIP_DIRS = {"node_modules", "venv", ".venv", ".git", "__pycache__", "dist", "build", ".next"}
 
 # a11y: img without alt — check the tag has an alt= attribute anywhere
 NO_ALT = re.compile(r"<img\b(?![^>]*\balt=)[^>]*>", re.IGNORECASE)
@@ -32,22 +30,12 @@ PLACEHOLDER = re.compile(r"\b(lorem ipsum|example\.com|placeholder|dummy text)\b
 AI_SLOP = re.compile(r"\b(welcome to our|get started today|revolutioniz|unleash|supercharge)\b", re.IGNORECASE)
 
 
+sys.path.insert(0, str(Path(__file__).parent / "lib"))
+import scan as _scan
+
 def changed_files(cwd: Path):
-    out = []
-    now = time.time()
-    for root, dirs, files in os.walk(cwd):
-        dirs[:] = [d for d in dirs if d not in SKIP_DIRS and not d.startswith(".")]
-        for name in files:
-            if name.startswith(("test_", "design-review")):
-                continue
-            p = Path(root) / name
-            if p.suffix in UI_EXTS:
-                try:
-                    if now - p.stat().st_mtime < (WINDOW_MIN + 1) * 60:
-                        out.append((p, p.relative_to(cwd)))
-                except OSError:
-                    pass
-    return out
+    return _scan.changed_files(cwd, window_min=WINDOW_MIN,
+                               skip_names=("test_", "design-review"))
 
 
 def review(p: Path, rel: Path):

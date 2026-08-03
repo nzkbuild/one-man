@@ -15,12 +15,10 @@ import json
 import os
 import re
 import sys
-import time
 from pathlib import Path
 
 CHANGED_WINDOW_MIN = 10
 SOURCE_EXTS = {".py", ".ts", ".tsx", ".js", ".jsx", ".rs"}
-SKIP_DIRS = {"node_modules", "venv", ".venv", ".git", "__pycache__", "dist", "build", ".next", "docs"}
 
 # ---- Defect patterns: clear, mechanical, actionable ----
 
@@ -46,23 +44,12 @@ def _dup_block(text):
 BARE_IO = re.compile(r"\bopen\s*\([^)]*\)\s*(?!\s*try)")
 
 
+sys.path.insert(0, str(Path(__file__).parent / "lib"))
+import scan as _scan
+
 def changed_files(cwd: Path):
-    out = []
-    now = time.time()
-    for root, dirs, files in os.walk(cwd):
-        dirs[:] = [d for d in dirs if d not in SKIP_DIRS and not d.startswith(".")]
-        for name in files:
-            # Skip tests + hook sources: fixtures/pattern strings are legit.
-            if name.startswith(("test_", "perf-guard", "review-gate", "understand-guard")):
-                continue
-            p = Path(root) / name
-            if p.suffix in SOURCE_EXTS:
-                try:
-                    if now - p.stat().st_mtime < (CHANGED_WINDOW_MIN + 1) * 60:
-                        out.append((p, p.relative_to(cwd)))
-                except OSError:
-                    pass
-    return out
+    return _scan.changed_files(cwd, window_min=CHANGED_WINDOW_MIN,
+                               skip_names=("test_", "perf-guard", "review-gate", "understand-guard"))
 
 
 def review_file(p: Path, rel: Path):

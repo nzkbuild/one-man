@@ -11,11 +11,9 @@ import json
 import os
 import re
 import sys
-import time
 from pathlib import Path
 
 WINDOW_MIN = 10
-SKIP_DIRS = {"node_modules", "venv", ".venv", ".git", "__pycache__", "dist", "build", ".next"}
 
 # N+1: a DB/ORM call inside a loop — ONLY DB-ish signals, so regex loops,
 # finditer, .get() on dicts, etc. do NOT false-fire. The lookahead must be a
@@ -37,27 +35,12 @@ NESTED_SAME = re.compile(
 FETCH_ALL = re.compile(r"\b(findall|query_all|all\(\)|fetchall|objects\.all)\b")
 
 
+sys.path.insert(0, str(Path(__file__).parent / "lib"))
+import scan as _scan
+
 def changed_files(cwd: Path):
-    out = []
-    now = time.time()
-    for root, dirs, files in os.walk(cwd):
-        dirs[:] = [d for d in dirs if d not in SKIP_DIRS and not d.startswith(".")]
-        for name in files:
-            # Skip test files + this hook's own source: both legitimately
-            # contain pattern strings as fixtures/declarations — scanning them
-            # is guaranteed self-referential noise.
-            if name.startswith("test_") or "_test." in name or name.endswith("_test.py"):
-                continue
-            if name.startswith(("perf-guard", "review-gate")):
-                continue
-            p = Path(root) / name
-            if p.suffix in (".py", ".ts", ".tsx", ".js", ".jsx", ".rs"):
-                try:
-                    if now - p.stat().st_mtime < (WINDOW_MIN + 1) * 60:
-                        out.append((p, p.relative_to(cwd)))
-                except OSError:
-                    pass
-    return out
+    return _scan.changed_files(cwd, window_min=WINDOW_MIN,
+                               skip_names=("test_", "perf-guard", "review-gate"))
 
 
 def review(p: Path, rel: Path):

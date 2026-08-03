@@ -12,7 +12,10 @@ const root = join(dirname(fileURLToPath(import.meta.url)), "..")
 const hooksDir = join(root, "hooks")
 const py = process.platform === "win32" ? "python" : process.env.PYTHON || "python3"
 
-const tests = readdirSync(hooksDir).filter((f) => f.startsWith("test_") && f.endsWith(".py"))
+// Top-level test_*.py + hooks/lib/test_*.py (shared helpers get tested too)
+const top = readdirSync(hooksDir).filter((f) => f.startsWith("test_") && f.endsWith(".py"))
+const lib = readdirSync(join(hooksDir, "lib")).filter((f) => f.startsWith("test_") && f.endsWith(".py"))
+const tests = [...top, ...lib.map((f) => join("lib", f))]
 if (!tests.length) {
   console.error("no test_*.py found in hooks/")
   process.exit(1)

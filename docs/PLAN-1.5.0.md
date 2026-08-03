@@ -115,9 +115,9 @@ One new artifact, three changes, zero new plugins/hooks-of-new-kind:
 
 ## 4. Acceptance criteria + tests per milestone
 
-### M1 — scan consolidation
-- **AC:** review-gate, perf-guard, design-review import the same `changed_files`; no duplicate implementations.
-- **Test:** all 3 existing self-checks still pass; `grep -l "def changed_files" hooks/*.py` returns only `hooks/lib/scan.py`.
+### M1 — scan consolidation ✅ DONE
+- **AC:** review-gate, perf-guard, design-review delegate to `hooks/lib/scan.py`; single implementation.
+- **Result (verified):** 0 `os.walk` in the 3 hooks, all delegate to `_scan.changed_files`; 13/13 self-checks (runner extended to include `hooks/lib/test_*.py`); 6-assertion scan self-check.
 
 ### M2 — risk classifier
 - **AC:** task-triage output includes `risk: high|medium|low` with the briefing.
