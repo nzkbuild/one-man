@@ -123,9 +123,9 @@ One new artifact, three changes, zero new plugins/hooks-of-new-kind:
 - **AC:** task-triage output includes `risk: high|medium|low` with the briefing.
 - **Result (verified):** classify_risk() added (HIGH_RISK/MEDIUM_RISK signal regexes, task-type fallback); briefing shows `Risk: high` for "fix the payment checkout bug"; 7 new assertions (18 total in task-triage test); 13/13 runner.
 
-### M3 — evidence store
-- **AC:** verify-turn/review-gate/task-triage append to `~/.claude/evidence/<task>.json`; fields per spec; bounded (prune > 200).
-- **Test:** fixture — run the hooks against a temp HOME, assert the record shape + content + pruning.
+### M3 — evidence store ✅ DONE
+- **AC:** task-triage seeds the record (type/risk/obligations); verify-turn appends test evidence (kind/result/exit_code/files/state_hash); bounded JSONL.
+- **Result (verified):** end-to-end flow produced the full record (obligations + evidence with state hash); 8-assertion evidence self-check; 14/14 runner.
 
 ### M4 — evidence-aware gate
 - **AC:** medium/high task with missing/failed/stale evidence → exit 2 blocks done; low task with no evidence → passes; re-edit after evidence → stale → blocks.

@@ -57,6 +57,29 @@ elif [ -f package.json ]; then
   fi
 fi
 
+# v1.5.0 M3: record test evidence (kind, result, exit code, changed files).
+# This is what "done" must later prove — against the current code state.
+EVID="$( cd "${BASH_SOURCE[0]%/*}" && pwd )/lib/evidence.py"
+if [ -n "$PY" ] && [ -f "$EVID" ]; then
+  CHANGED_FILES="$(find . -maxdepth 3 \( -name '*.py' -o -name '*.ts' -o -name '*.tsx' -o -name '*.js' \) \
+    -newermt '-10 minutes' -not -path './node_modules/*' -not -path './.git/*' 2>/dev/null | head -20)"
+  if [ -n "$OUT" ]; then
+    "$PY" - "$EVID" "$FAILED" "$CHANGED_FILES" <<'PYEOF'
+import json, sys
+evid, failed, files = sys.argv[1], sys.argv[2], sys.argv[3].split()
+try:
+    sys.path.insert(0, __import__("os").path.dirname(evid))
+    import evidence as ev
+    ev.append_evidence("current", "tests",
+                       "failed" if failed == "1" else "passed",
+                       exit_code=2 if failed == "1" else 0,
+                       files=files)
+except Exception:
+    pass
+PYEOF
+  fi
+fi
+
 if [ "$FAILED" = "1" ]; then
   printf 'Tests are FAILING. Do not report this work as done — fix these first:\n%s\n' \
     "$OUT" >&2

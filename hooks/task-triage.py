@@ -149,6 +149,26 @@ def main():
     flow = load_flow()
     skills = skills_for(ttype, flow)
 
+    # v1.5.0 M3: seed the per-task evidence record (type/risk/obligations).
+    # Obligations by task type — what "done" must prove.
+    _OBLIGATIONS = {
+        "bug": ["regression test (failed before, passes now)"],
+        "refactor": ["baseline tests green before+after", "behavior unchanged"],
+        "feature": ["tests for the new path", "build green"],
+        "question": [],  # no evidence obligation for a question
+        "chore": ["change applied, verified, reversible"],
+        "design": ["design chain followed", "a11y checked"],
+    }
+    try:
+        sys.path.insert(0, str(Path(__file__).parent / "lib"))
+        import evidence as _ev
+        _ev.write_record("current", {
+            "type": ttype, "risk": risk,
+            "obligations": _OBLIGATIONS.get(ttype, []),
+        })
+    except Exception:
+        pass
+
     # Pull pre-mortem + exit criteria for this type
     premortem = ""
     exit_criteria = ""
