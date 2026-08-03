@@ -24,6 +24,8 @@ jobs:
         run: for f in hooks/test_*.py; do python3 "$f"; done
       - name: Plan-check (open items must not ship under a release)
         run: python3 scripts/plan-check.py --release
+      - name: "Lesson ledger: unresolved high-risk blocks, learned passes"
+        run: python3 scripts/ci-lessons-fixture.py
       - name: "Evidence gate: fixture task must block without proof"
         run: |
           python3 - <<'PY'

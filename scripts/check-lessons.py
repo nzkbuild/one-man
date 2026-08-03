@@ -38,9 +38,10 @@ def _find(rel: str) -> bool:
 def check():
     if not LESSONS_DIR.exists():
         return []
-    # Lifecycle: a lesson is "learned" only at enforced/tested/closed.
+    # Lifecycle: a lesson is "learned" at enforced/tested/closed; dismissed is
+    # closed-by-decision (deliberately no action — not at-risk).
     # observed/confirmed/generalized = recorded but NOT yet prevented.
-    LEARNED = {"enforced", "tested", "closed"}
+    LEARNED = {"enforced", "tested", "closed", "dismissed"}
     problems = []
     for p in sorted(LESSONS_DIR.glob("*.json")):
         try:

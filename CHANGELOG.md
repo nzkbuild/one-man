@@ -5,6 +5,31 @@ All notable changes to one-man. Format: Keep a Changelog
 
 ## [Unreleased]
 
+## [1.5.1] - 2026-08-04
+
+### Added
+- **Lesson ledger** (hooks/lib/lessons.py): structured record of violations,
+  root causes, corrections, layer, recurrence risk — with a full lifecycle
+  (observed -> confirmed -> generalized -> enforced/tested -> closed | dismissed).
+  A recorded note alone is NOT learned; only enforced/tested/closed count.
+- **Stable lesson IDs**: sha1 fingerprint of the normalized violation, not free-text.
+- **Recurrence detection** (scripts/check-lessons.py): high-risk lessons not yet
+  learned block (exit 2); broken prevention (missing test_ref) detected. Wired
+  into CI with a focused fixture (unresolved blocks, learned passes, malformed
+  fails safely).
+- **Filtered SessionStart digest**: one-line, bounded, repo-signal-relevant lessons.
+- **Skill & plugin audit** (docs/SKILL-AUDIT-1.5.1.md): all 27 items classified
+  (useful/deferred/obsolete); no ceremonial invocation forced.
+- **Privacy-safe seed** (lessons/seed.json): 5 generic lessons; seed test rejects
+  all 8 personal-data categories (31 assertions).
+- **pre-push hook**: runs check + health + plan-check before ANY push — the
+  push-before-locally-catchable-checks regression, closed locally.
+
+### Fixed
+- dismissed lessons now pass the recurrence gate (closed-by-decision, not at-risk).
+- Assessment doc fully redacted of private-IP patterns.
+
+
 ## [1.5.0] - 2026-08-04
 
 ### Added
