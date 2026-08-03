@@ -75,12 +75,12 @@ is deliberately v1.4.0 — it is architectural and deserves its own design pass.
 
 ## Definition of done (all self-checked, CI green, plan-check `[x]`)
 
-- [ ] review-gate flags a real defect in fixture, silent on clean
-- [ ] security-audit produces a dated report in a fixture HOME
-- [ ] perf-guard flags N+1 pattern, silent on clean
-- [ ] restore-drill round-trips a fixture backup to scratch
-- [ ] ADR-001 committed; AGENTS.md rule added
-- [ ] design-review flags an a11y gap in fixture, silent on clean
-- [ ] understand-guard nudges on unread-file edit, silent on new file
-- [ ] 7 new self-checks in runner (14 total), CI green both OSes
-- [ ] v1.3.0 tagged on CI-green commit, CHANGELOG entry
+- [x] review-gate flags a real defect in fixture, silent on clean
+- [x] security-audit produces a dated report in a fixture HOME
+- [x] perf-guard flags N+1 pattern, silent on clean
+- [x] restore-drill round-trips a fixture backup to scratch
+- [x] ADR-001 committed; AGENTS.md rule added
+- [x] design-review flags an a11y gap in fixture, silent on clean
+- [x] understand-guard nudges on unread-file edit, silent on new file
+- [x] 7 new self-checks in runner (14 total), CI green both OSes
+- [x] v1.3.0 tagged on CI-green commit, CHANGELOG entry

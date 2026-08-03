@@ -5,6 +5,28 @@ All notable changes to one-man. Format: Keep a Changelog
 
 ## [Unreleased]
 
+## [1.3.0] - 2026-08-04
+
+### Added
+- `review-gate` (Stop): automated code review of changed files — bare except,
+  TODO left (blocking); magic numbers, duplicated blocks (guide). The solo
+  developer's second pair of eyes.
+- `understand-guard` (PreToolUse): read-before-write nudge on stale-target edits.
+- `perf-guard` (PostToolUse): N+1, O(n²) nested-same-scan, unbounded fetch-all
+  nudges (DB-signal only — no regex-loop false positives).
+- `design-review` (Stop): a11y (no-alt, no-label) blocks; placeholder/AI-slop guides.
+- `scripts/security-audit.sh`: continuous pnpm/npm audit -> dated report in
+  ~/.claude/reports/.
+- `scripts/restore-drill.sh`: backup -> restore to scratch -> verify every archive
+  entry present. Proves backup works.
+- `docs/architecture/ADR-001-one-man-architecture.md` + AGENTS.md ADR rule.
+- docs/PLAN-1.3.0.md: the linear-axis completion spec (tracked by plan-check).
+
+### Fixed
+- perf-guard/review-gate self-referential false positives (skip test + hook files).
+- security-audit false alarm on "No known vulnerabilities found".
+
+
 ## [1.2.0] - 2026-08-04
 
 ### Added
