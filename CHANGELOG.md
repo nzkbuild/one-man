@@ -5,6 +5,31 @@ All notable changes to one-man. Format: Keep a Changelog
 
 ## [Unreleased]
 
+## [1.5.0] - 2026-08-04
+
+### Added
+- **Risk classifier** (task-triage): every prompt gets risk high/medium/low from
+  signals (auth, payment, security, migration, concurrency -> high; api/refactor ->
+  medium; docs/typo -> low). Drives the gates, advisory by itself.
+- **Per-task evidence store** (hooks/lib/evidence.py): `~/.claude/evidence/current.json`
+  seeded by task-triage (type/risk/obligations), appended by verify-turn (test
+  result, exit code, changed files, state hash). Bounded JSONL, local-only.
+- **Evidence-aware completion gate** (hooks/lib/gate.py): medium/high-risk tasks
+  block "done" without non-stale evidence backing their obligations. Staleness =
+  file changed after verification (state-hash re-check). Auditable override recorded.
+- **Context-isolated review** (review-gate): high-risk tasks require isolated_review
+  evidence — a fresh-context subagent with only diff+task+conventions. Blocks without it.
+- **Control criticality** (one-man.controls.json + hooks/lib/controls.py): safety
+  (fail closed under ONE_MAN_FAIL_CLOSED=1) / quality (block done/release) / advisory (warn).
+- **CI evidence-gate job**: CI runs the gate against a fixture task — the authority
+  beyond local hooks.
+- Consolidated duplicated changed-file scanning into hooks/lib/scan.py.
+
+### Changed
+- verify-turn now records test evidence before gating.
+- Installers copy one-man.controls.json.
+
+
 ## [1.4.0] - 2026-08-04
 
 ### Added
