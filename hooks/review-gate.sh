@@ -7,7 +7,9 @@ SCRIPT="$( cd "${BASH_SOURCE[0]%/*}" && pwd )/review-gate.py"
 INPUT="$(cat)"
 
 if [ -n "$INPUT" ]; then
-  HOOK_INPUT="$INPUT" python "$SCRIPT" 2>&1
+  # stderr passes through (findings must reach the harness via stderr);
+  # stdout is the JSON/context channel. Do NOT merge.
+  HOOK_INPUT="$INPUT" python "$SCRIPT"
   EXIT=$?
   if [ "$EXIT" = "2" ]; then
     exit 2

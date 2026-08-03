@@ -6,7 +6,7 @@ SCRIPT="$( cd "${BASH_SOURCE[0]%/*}" && pwd )/perf-guard.py"
 INPUT="$(cat)"
 
 if [ -n "$INPUT" ]; then
-  HOOK_INPUT="$INPUT" python "$SCRIPT" 2>&1
+  HOOK_INPUT="$INPUT" python "$SCRIPT"
 fi
 
 exit 0
