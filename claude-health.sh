@@ -90,5 +90,18 @@ else
 fi
 
 echo ""
+echo ""
+echo "-- 7. version consistency (package.json == controls) --"
+# Python extraction is robust; sed backrefs get mangled in heredocs.
+PY_RD="r'$REPO_DIR'.replace('/c/','C:/')"
+PKG_V="$("$P" -c "import json;print(json.load(open($PY_RD+'/package.json'))['version'])" 2>/dev/null)"
+CTRL_V="$("$P" -c "import json;print(json.load(open($PY_RD+'/one-man.controls.json'))['version'])" 2>/dev/null)"
+TAG_V="$(git -C "$REPO_DIR" describe --tags --abbrev=0 2>/dev/null | sed 's/^v//')"
+if [ -n "$PKG_V" ] && [ -n "$CTRL_V" ] && [ "$PKG_V" = "$CTRL_V" ]; then
+  ok "versions consistent (package=$PKG_V, controls=$CTRL_V, tag=${TAG_V:-none})"
+else
+  bad "version mismatch: package=$PKG_V controls=$CTRL_V — align before release"
+fi
+
 echo "== result: $pass ok, $fail failed =="
 [ "$fail" = "0" ] && exit 0 || exit 1

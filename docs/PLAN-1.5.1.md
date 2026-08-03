@@ -63,7 +63,7 @@
 
 - **M1:** ✅ DONE — hooks/lib/lessons.py (add/all/high_risk_untested/relevant, bounded 30); self-evolve SKILL.md gains the ledger step (layer decision table). 9-assertion self-check.
 - **M2:** ✅ DONE — scripts/check-lessons.py (high-risk untested + broken-prevention detection, exit 2); session-context injects a filtered relevance digest (token-disciplined, capped 5); runner includes the script test. 6-assertion self-check.
-- **M3:** regression test asserts hook tests run isolated (the F6 class); health check fails when version mismatches tag. 4 assertions.
+- **M3:** ✅ DONE — hooks/lib/test_ci_parity.py (empty-cwd isolation invariant + deterministic gate verdict, the F6 class); claude-health gains the version-consistency check (package==controls, the F4 miss dies locally). 3-assertion CI-parity self-check; health 30 checks.
 - **M4:** seed installs when `~/.claude/lessons/` empty, never overwrites; seed contains zero personal data (scan). 3 assertions.
 
 ## 4. Deferred / rejected
