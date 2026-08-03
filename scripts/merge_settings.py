@@ -70,7 +70,7 @@ def main():
         # Mid-turn
         ("PreCompact", "*", ["precompact-checkpoint.sh"]),
         ("UserPromptSubmit", "*", ["task-triage.sh", "prompt-guard.sh", "phase-gate.sh"]),
-        ("PreToolUse", "Bash|PowerShell|Write|Edit|NotebookEdit", ["danger-guard.sh", "discipline-guard.sh"]),
+        ("PreToolUse", "Bash|PowerShell|Write|Edit|NotebookEdit", ["danger-guard.sh", "discipline-guard.sh", "understand-guard.sh"]),
         ("PostToolUse", "Write|Edit|NotebookEdit", ["verify-edit.sh"]),
         ("PostToolUse", "Bash|PowerShell", ["dep-guard.sh"]),
         ("SubagentStop", "*", ["subagent-guard.sh"]),
