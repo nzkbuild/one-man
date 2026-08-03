@@ -63,7 +63,7 @@ def main():
         ("SessionStart", "resume", ["session-context.sh"]),
         ("SessionStart", "compact", ["session-context.sh"]),
         # SessionStart: health + audit
-        ("SessionStart", "startup", ["settings-validate.sh", "project-audit.sh", "hook-health.sh"]),
+        ("SessionStart", "startup", ["settings-validate.sh", "project-audit.sh", "hook-health.sh", "hotspot-report.sh"]),
         ("SessionStart", "resume", ["settings-validate.sh", "project-audit.sh", "hook-health.sh"]),
         # SessionStart: cache heal (node)
         ("SessionStart", "startup|resume", ["context-mode-cache-heal.mjs"]),
