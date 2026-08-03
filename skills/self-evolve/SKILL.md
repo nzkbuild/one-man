@@ -54,8 +54,35 @@ Insert at the TOP of the entries (just after `<!-- LESSONS-START -->`), newest-f
 Use today's date. Keep the entry to 4 lines. Preferences: a concise bullet in the
 appropriate `PREFERENCES.md` under its marker.
 
-## 6. Confirm
-Report one line: what you saved, the scope (global/project), and the priority. The
-SessionStart hook loads it next session automatically — no restart needed.
+## 6. Write the lesson ledger (v1.5.1)
+Alongside the memory note, record the lesson structurally so recurrence is
+detectable. Run:
+```
+python -c "
+import sys; sys.path.insert(0, '$HOME/.claude/hooks/lib')
+import lessons
+lessons.add(
+  violation='<one-line what happened>',
+  root_cause='<one-line why>',
+  correction='<one-line the fix>',
+  layer='<local-memory|claude-md|skill|hook|regression-test|ci-gate|none>',
+  recurrence_risk='<high|medium|low>',
+  tested=<True if a test/check now covers it, else False>,
+  test_ref='<test file or check name, if tested>')
+"
+```
+Choose the layer per the nature of the lesson:
+- **regression-test / ci-gate** — a mechanical check can prevent it (preferred).
+- **hook** — a hook nudge/gate can catch it at the moment of need.
+- **claude-md** — a durable rule, not mechanically checkable.
+- **local-memory** — project-specific, not worth a rule.
+- **none** — one-off, no reusable rule: do NOT write the ledger entry either.
+
+A lesson counts only when it is retrievable, applied at the right time, and its
+recurrence prevention is tested where practical. Writing a note is not learning.
+
+## 7. Confirm
+Report one line: what you saved, the scope (global/project), the priority, and the
+ledger layer. The SessionStart hook loads it next session automatically — no restart needed.
 
 If invoked with arguments, treat `$ARGUMENTS` as the lesson text to capture.
