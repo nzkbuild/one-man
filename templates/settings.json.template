@@ -35,13 +35,7 @@
       "Bash(pnpm build:*)",
       "Bash(python:*)",
       "Bash(node:*)",
-      "Bash(npx:*)",
-      "Read:*.md",
-      "Read:*.py",
-      "Read:*.ts",
-      "Read:*.tsx",
-      "Read:*.js",
-      "Read:*.json"
+      "Bash(npx:*)"
     ],
     "deny": [
       "Read(**/.env)",
