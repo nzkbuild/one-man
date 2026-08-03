@@ -2,6 +2,8 @@
 """Self-check for review-gate.py — defect detection."""
 import importlib.util
 import io
+import json
+import os
 import sys
 import tempfile
 from contextlib import redirect_stderr
@@ -10,6 +12,9 @@ from pathlib import Path
 _spec = importlib.util.spec_from_file_location("rg", Path(__file__).parent / "review-gate.py")
 _rg = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(_rg)
+
+sys.path.insert(0, str(Path(__file__).parent / "lib"))
+import evidence as _ev  # noqa: E402 — local lib, path insert required
 
 PASS = 0
 
@@ -50,14 +55,14 @@ check("clean py silent", not b and not g)
 
 
 # --- v1.5.0 M5: context-isolated review for high-risk ---
-sys.path.insert(0, str(Path(__file__).parent / "lib"))
-import evidence as _ev
-
 def run_gate(risk, evidence_list):
-    """Run review-gate main() with a task record; return (exit, stderr)."""
+    """Run review-gate main() with a task record; return (exit, stderr).
+    Points cwd at an EMPTY temp dir so the repo's own files never enter the
+    scan — this test exercises the isolation logic only, not the repo review."""
     with tempfile.TemporaryDirectory() as tmp:
         _ev.EVIDENCE_DIR = Path(tmp)
         _ev.write_record("current", {"type": "bug", "risk": risk, "evidence": evidence_list})
+        os.environ["HOOK_INPUT"] = json.dumps({"cwd": tmp})
         buf = io.StringIO()
         with redirect_stderr(buf):
             try:
