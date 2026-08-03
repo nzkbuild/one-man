@@ -42,4 +42,14 @@ check("missing flow -> empty", _tt.skills_for("bug", {}) == [])
 flow_design = {"design": {"chain": ["brandkit", "design-taste-frontend", "minimalist-ui"]}}
 check("design routes to chain", _tt.skills_for("design", flow_design) == ["brandkit", "design-taste-frontend", "minimalist-ui"])
 
+
+# --- v1.5.0 M2: risk classification ---
+check("payment bug is high", _tt.classify_risk("fix the payment bug", "bug") == "high")
+check("auth change is high", _tt.classify_risk("update login token handling", "feature") == "high")
+check("migration is high", _tt.classify_risk("write the data migration", "chore") == "high")
+check("refactor is medium", _tt.classify_risk("refactor the module", "refactor") == "medium")
+check("api change medium", _tt.classify_risk("change the api endpoint", "feature") == "medium")
+check("docs typo low", _tt.classify_risk("fix typo in readme", "chore") == "low")
+check("question low", _tt.classify_risk("what does this do?", "question") == "low")
+
 print(f"OK: {PASS} assertions passed")

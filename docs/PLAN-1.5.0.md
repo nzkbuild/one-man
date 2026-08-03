@@ -119,9 +119,9 @@ One new artifact, three changes, zero new plugins/hooks-of-new-kind:
 - **AC:** review-gate, perf-guard, design-review delegate to `hooks/lib/scan.py`; single implementation.
 - **Result (verified):** 0 `os.walk` in the 3 hooks, all delegate to `_scan.changed_files`; 13/13 self-checks (runner extended to include `hooks/lib/test_*.py`); 6-assertion scan self-check.
 
-### M2 — risk classifier
+### M2 — risk classifier ✅ DONE
 - **AC:** task-triage output includes `risk: high|medium|low` with the briefing.
-- **Test:** fixture prompts — "fix the payment bug" → high; "update README" → low; "refactor the API module" → medium. 5-6 assertions.
+- **Result (verified):** classify_risk() added (HIGH_RISK/MEDIUM_RISK signal regexes, task-type fallback); briefing shows `Risk: high` for "fix the payment checkout bug"; 7 new assertions (18 total in task-triage test); 13/13 runner.
 
 ### M3 — evidence store
 - **AC:** verify-turn/review-gate/task-triage append to `~/.claude/evidence/<task>.json`; fields per spec; bounded (prune > 200).

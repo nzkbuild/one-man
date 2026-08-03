@@ -16,6 +16,7 @@ prompt would be noise; missed classifications fall back to a generic briefing.
 """
 import json
 import os
+import re
 import sys
 from pathlib import Path
 
@@ -69,6 +70,39 @@ TASKS = [
 ]
 
 
+# ---- Risk classification (v1.5.0 M2) ----
+# High-risk surfaces: money, auth, security, data, concurrency, crypto,
+# migrations. A change touching these escalates scrutiny (evidence gate,
+# isolated review). Low-risk: docs/typos/no behavior change. Everything else
+# medium. Risk is advisory context — it drives the gates, not a block itself.
+HIGH_RISK = re.compile(
+    r"\b(auth|login|password|token|session|payment|checkout|billing|invoice|"
+    r"security|vulnerab|inject|ssl|tls|crypto|encrypt|decrypt|hash|"
+    r"migration|migrate|schema|concurren|race|deadlock|lock|"
+    r"money|balance|transaction|refund|charge|sensitive|pii|gdpr)\b",
+    re.IGNORECASE,
+)
+MEDIUM_RISK = re.compile(
+    r"\b(api|endpoint|refactor|restructure|rewrite|multi-file|schema change|"
+    r"database|db |sql|index|deploy|rollback|public|contract|version|"
+    r"break|compatib)\b",
+    re.IGNORECASE,
+)
+
+
+def classify_risk(prompt: str, task_type: str) -> str:
+    """Return high|medium|low from the prompt + task type.
+
+    High-risk signals dominate (a payment bug is high even as a 'bug').
+    Medium falls back to task type (refactor/feature are inherently medium+).
+    """
+    if HIGH_RISK.search(prompt):
+        return "high"
+    if MEDIUM_RISK.search(prompt) or task_type in ("refactor", "feature"):
+        return "medium"
+    return "low"
+
+
 def load_flow():
     """Read skills.flow.json if present — the trigger->skill routing table."""
     try:
@@ -111,6 +145,7 @@ def main():
         sys.exit(0)
 
     ttype, reason = classify(prompt)
+    risk = classify_risk(prompt, ttype)
     flow = load_flow()
     skills = skills_for(ttype, flow)
 
@@ -125,6 +160,7 @@ def main():
     lines = [
         "# Task triage (2s)",
         f"Type: {ttype}  (matched: {reason})",
+        f"Risk: {risk}",
     ]
     if skills:
         lines.append(f"Skills to invoke: {', '.join(skills)}")
