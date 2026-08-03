@@ -24,7 +24,7 @@ jobs:
         run: for f in hooks/test_*.py; do python3 "$f"; done
       - name: Plan-check (open items must not ship under a release)
         run: python3 scripts/plan-check.py --release
-      - name: Observe: claude-health against fixture HOME
+      - name: "Observe: claude-health against fixture HOME"
         run: |
           mkdir -p /tmp/fh/.claude/hooks
           cp hooks/*.sh hooks/*.py hooks/*.mjs /tmp/fh/.claude/hooks/
