@@ -71,6 +71,21 @@ if (-not (Test-Path (Join-Path $ClaudeHome "self\PREFERENCES.md"))) {
     Run Copy-Item (Join-Path $Repo "self\PREFERENCES.md.template") (Join-Path $ClaudeHome "self\PREFERENCES.md")
 }
 
+# ---------- Step 5.7: lesson ledger seed (only if empty) ----------
+$lessonsDir = Join-Path $ClaudeHome "lessons"
+if (-not (Test-Path $lessonsDir) -or -not (Get-ChildItem $lessonsDir -ErrorAction SilentlyContinue)) {
+    New-Item -ItemType Directory -Force -Path $lessonsDir | Out-Null
+    python -c "
+import json
+seed = json.load(open(r'$Repo\lessons\seed.json'))
+for l in seed['lessons']:
+    open(r'$lessonsDir' + l['id'] + '.json', 'w').write(json.dumps(l))
+"
+    Say "  seeded lesson ledger"
+} else {
+    Say "  ledger exists - not overwriting user lessons"
+}
+
 # ---------- Step 5.6: control criticality ----------
 Run Copy-Item (Join-Path $Repo "one-man.controls.json") (Join-Path $ClaudeHome "one-man.controls.json") -Force
 

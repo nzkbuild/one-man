@@ -1,0 +1,56 @@
+{
+  "version": "1.5.1",
+  "description": "Generic, reusable, privacy-safe lessons distilled from the v1.5.0 release session. Copied to ~/.claude/lessons/ on install ONLY if the ledger is empty — never overwrites user lessons. No personal data, no secrets, no paths.",
+  "lessons": [
+    {
+      "id": "test-isolation",
+      "violation": "Hook test scanned the real repository cwd",
+      "root_cause": "Test pointed the gate at the live repo; CI-linux had different repo state than the dev machine",
+      "correction": "Hook tests must point the gate at an empty temp cwd so repo files never enter the scan",
+      "layer": "regression-test",
+      "recurrence_risk": "high",
+      "tested": true,
+      "test_ref": "hooks/lib/test_ci_parity.py"
+    },
+    {
+      "id": "local-vs-ci-parity",
+      "violation": "Local checks passed but hosted CI failed",
+      "root_cause": "Local environment differs from CI (OS, repo state, path translation); local-only verification is insufficient",
+      "correction": "Verify locally, then confirm on CI before declaring done; CI is the authority for release",
+      "layer": "ci-gate",
+      "recurrence_risk": "high",
+      "tested": true,
+      "test_ref": ".github/workflows/validate.yml"
+    },
+    {
+      "id": "version-consistency",
+      "violation": "package.json version not bumped at release time",
+      "root_cause": "No mechanical check tying package/controls/tag versions together",
+      "correction": "A health check asserts package.json version == controls version before release",
+      "layer": "hook",
+      "recurrence_risk": "medium",
+      "tested": true,
+      "test_ref": "claude-health.sh"
+    },
+    {
+      "id": "ambiguous-loop-variable",
+      "violation": "E741 class: single-letter loop variable 'l' recurring across new code",
+      "root_cause": "Ambiguous names are a blind spot that recurs once the pattern is used",
+      "correction": "Use descriptive loop variables; verify-edit lint enforces it",
+      "layer": "hook",
+      "recurrence_risk": "medium",
+      "tested": true,
+      "test_ref": "hooks/verify-edit.sh"
+    },
+    {
+      "id": "self-referential-scan",
+      "violation": "A scanner flagged its own pattern strings as defects",
+      "root_cause": "Hooks scanned test/hook files containing literal pattern strings as fixtures",
+      "correction": "Scanners skip test files and their own sources; shared scan.py skip_names",
+      "layer": "hook",
+      "recurrence_risk": "medium",
+      "tested": true,
+      "test_ref": "hooks/lib/scan.py"
+    }
+  ]
+}

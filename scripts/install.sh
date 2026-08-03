@@ -66,6 +66,19 @@ cp -f "$REPO/self/PRINCIPLES.md.template" "$CLAUDE_HOME/self/PRINCIPLES.md" 2>/d
 # PREFERENCES is user-curated — only write if missing.
 [ -f "$CLAUDE_HOME/self/PREFERENCES.md" ] || cp "$REPO/self/PREFERENCES.md.template" "$CLAUDE_HOME/self/PREFERENCES.md" 2>/dev/null || true
 
+# ---------- Step 5.7: lesson ledger seed (only if empty — never overwrite) ----------
+if [ ! -d "$CLAUDE_HOME/lessons" ] || [ -z "$(ls -A "$CLAUDE_HOME/lessons" 2>/dev/null)" ]; then
+  mkdir -p "$CLAUDE_HOME/lessons"
+  python3 -c "
+import json, sys
+seed = json.load(open('$REPO/lessons/seed.json'))
+for l in seed['lessons']:
+    open('$CLAUDE_HOME/lessons/' + l['id'] + '.json', 'w').write(json.dumps(l))
+" 2>/dev/null && echo "  seeded lesson ledger"
+else
+  echo "  ledger exists — not overwriting user lessons"
+fi
+
 # ---------- Step 5.6: control criticality ----------
 cp "$REPO/one-man.controls.json" "$CLAUDE_HOME/one-man.controls.json" 2>/dev/null || true
 
