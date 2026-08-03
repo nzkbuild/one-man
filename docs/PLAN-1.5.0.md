@@ -127,9 +127,9 @@ One new artifact, three changes, zero new plugins/hooks-of-new-kind:
 - **AC:** task-triage seeds the record (type/risk/obligations); verify-turn appends test evidence (kind/result/exit_code/files/state_hash); bounded JSONL.
 - **Result (verified):** end-to-end flow produced the full record (obligations + evidence with state hash); 8-assertion evidence self-check; 14/14 runner.
 
-### M4 — evidence-aware gate
-- **AC:** medium/high task with missing/failed/stale evidence → exit 2 blocks done; low task with no evidence → passes; re-edit after evidence → stale → blocks.
-- **Test:** 6-8 assertions (missing, failed, stale-after-edit, low-risk-passes, evidence-present-passes).
+### M4 — evidence-aware gate ✅ DONE
+- **AC:** medium/high with missing/failed/stale evidence blocks done; low passes; re-edit → stale → blocks; auditable override passes.
+- **Result (verified):** hooks/lib/gate.py — obligations must be backed by non-stale evidence (state-hash re-check); override recorded as justification. Wired into verify-turn Stop gate. 8-assertion gate self-check + end-to-end block verified; 15/15 runner.
 
 ### M5 — context-isolated review
 - **AC:** high-risk task triggers a fresh-context review; findings land in the evidence store; review context excludes implementation history.

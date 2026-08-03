@@ -98,4 +98,16 @@ if [ -n "$PY" ] && [ -f "$SG" ]; then
   fi
 fi
 
+# v1.5.0 M4: evidence-aware completion gate. For medium/high-risk tasks, "done"
+# requires non-stale evidence that the obligations were satisfied. Exit 2 blocks
+# completion claims without proof. Fail-safe: any error -> exit 0 (availability).
+GATE="$( cd "${BASH_SOURCE[0]%/*}" && pwd )/lib/gate.py"
+if [ -n "$PY" ] && [ -f "$GATE" ]; then
+  "$PY" "$GATE" 2>&1
+  GATE_EXIT=$?
+  if [ "$GATE_EXIT" = "2" ]; then
+    exit 2
+  fi
+fi
+
 exit 0
