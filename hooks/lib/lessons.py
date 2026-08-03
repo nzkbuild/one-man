@@ -9,16 +9,32 @@ right time, and its recurrence prevention is tested where practical. Writing
 a note is not learning.
 
 Entry shape:
-  {id, date, category, violation, root_cause, correction, layer,
+  {id, status, date, category, violation, root_cause, correction, layer,
    recurrence_risk: high|medium|low, tested: bool, test_ref: str|None,
    source: "local"|"seed"}
+
+Lesson LIFECYCLE (req 1 — a recorded note alone is NOT learned):
+  observed   -> the violation happened (default on add)
+  confirmed  -> root cause verified, not just hypothesized
+  generalized-> the reusable rule is extracted (the correction)
+  enforced   -> a mechanism (hook/test/CI/rule) now prevents it
+  tested     -> the prevention has a runnable check that passes
+  closed     -> enforced + tested + no recurrence in a window
+  dismissed  -> no permanent action justified (one-off / not reusable)
+
+  A lesson is "learned" only when it reaches enforced or tested, with a
+  runnable check. The status field makes that explicit and auditable.
 
 Layer decision (the correct home for each lesson):
   local-memory | claude-md | skill | hook | regression-test | ci-gate | none
 
+Stable ID (req 2): sha1 of the normalized violation text — collision-stable
+across re-writes and re-saves, independent of phrasing drift. Not free-text.
+
 Local-only + bounded (prune oldest). Never ships; the seed (repo) is the only
 generic content, and it never overwrites user lessons.
 """
+import hashlib
 import json
 import os
 import time
@@ -27,6 +43,10 @@ from pathlib import Path
 HOME = Path(os.path.expanduser("~"))
 LESSONS_DIR = HOME / ".claude" / "lessons"
 MAX_LESSONS = 30
+
+# Lifecycle states, ordered. A lesson advances via set_status().
+STATUSES = ("observed", "confirmed", "generalized", "enforced", "tested",
+            "closed", "dismissed")
 
 
 def _dir() -> Path:
@@ -37,19 +57,24 @@ def _dir() -> Path:
     return LESSONS_DIR
 
 
-def _slug(text: str) -> str:
+def _stable_id(violation: str) -> str:
+    """Stable fingerprint: sha1 of normalized violation text (req 2)."""
     import re
-    s = re.sub(r"[^a-z0-9]+", "-", text.lower()).strip("-")[:60]
-    return s or "lesson"
+    norm = re.sub(r"[^a-z0-9]+", " ", violation.lower()).strip()
+    return hashlib.sha1(norm.encode("utf-8")).hexdigest()[:12]
 
 
 def add(violation: str, root_cause: str, correction: str, layer: str,
         recurrence_risk: str = "medium", tested: bool = False,
-        test_ref: str = None, category: str = "process", source: str = "local"):
-    """Write one lesson entry. Returns the id or None on failure."""
+        test_ref: str = None, category: str = "process", source: str = "local",
+        status: str = "observed"):
+    """Write one lesson entry. Returns the stable id or None on failure."""
     try:
+        if status not in STATUSES:
+            status = "observed"
         entry = {
-            "id": _slug(violation),
+            "id": _stable_id(violation),
+            "status": status,
             "date": time.strftime("%Y-%m-%d"),
             "category": category,
             "violation": violation,
@@ -62,7 +87,7 @@ def add(violation: str, root_cause: str, correction: str, layer: str,
             "source": source,
         }
         p = _dir() / f"{entry['id']}.json"
-        # update in place if same id (dedupe), else new file
+        # update in place if same id (dedupe by stable fingerprint), else new
         if p.exists():
             old = json.loads(p.read_text(encoding="utf-8"))
             old.update(entry)
@@ -72,6 +97,24 @@ def add(violation: str, root_cause: str, correction: str, layer: str,
         return entry["id"]
     except Exception:
         return None
+
+
+def set_status(lesson_id: str, status: str) -> bool:
+    """Advance a lesson through the lifecycle. Returns True on success."""
+    if status not in STATUSES:
+        return False
+    try:
+        p = _dir() / f"{lesson_id}.json"
+        if not p.exists():
+            return False
+        entry = json.loads(p.read_text(encoding="utf-8"))
+        entry["status"] = status
+        if status in ("enforced", "tested", "closed") and entry.get("test_ref"):
+            entry["tested"] = True
+        p.write_text(json.dumps(entry, indent=2), encoding="utf-8")
+        return True
+    except Exception:
+        return False
 
 
 def all_lessons():

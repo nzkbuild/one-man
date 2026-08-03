@@ -38,10 +38,10 @@ with tempfile.TemporaryDirectory() as tmp:
     probs = run_with(d)
     check("high-risk untested detected", any("at-risk" in p for p in probs))
 
-    # tested with broken test_ref -> detected
+    # tested with broken test_ref -> detected (status=tested = LEARNED)
     (d / "b.json").write_text(
         '{"violation": "version bump", "recurrence_risk": "high", '
-        '"tested": true, "test_ref": "nope_does_not_exist.py"}', encoding="utf-8")
+        '"status": "tested", "tested": true, "test_ref": "nope_does_not_exist.py"}', encoding="utf-8")
     probs = run_with(d)
     check("broken prevention detected", any("prevention broken" in p for p in probs))
 
@@ -49,7 +49,7 @@ with tempfile.TemporaryDirectory() as tmp:
     (d / "b.json").unlink()
     (d / "a.json").unlink()
     (d / "c.json").write_text(
-        '{"violation": "ok", "recurrence_risk": "high", "tested": true, '
+        '{"violation": "ok", "recurrence_risk": "high", "status": "tested", "tested": true, '
         '"test_ref": "scripts/test_check_lessons.py"}', encoding="utf-8")
     probs = run_with(d)
     check("valid test_ref silent", not any("prevention broken" in p for p in probs))

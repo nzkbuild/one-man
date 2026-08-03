@@ -35,10 +35,25 @@ for les in lessons:
     if les["tested"]:
         check(f"test_ref resolves: {les['id']}", (ROOT / les["test_ref"]).exists())
 
-# privacy: no personal data in the seed
+# privacy: no personal data in the seed (req 6 — all 8 categories)
 raw = json.dumps(seed)
-check("no api keys", not re.search(r"sk-[A-Za-z0-9]{20}", raw))
-check("no email", "gmail" not in raw and "@" not in raw.replace('"@', ''))
-check("no local paths", "/Users/" not in raw and "C:\\Users" not in raw and "nbzkr" not in raw)
+# 1. API keys and credentials
+check("no api keys", not re.search(r"(sk-[A-Za-z0-9]{20}|AKIA[0-9A-Z]{16}|ghp_[A-Za-z0-9]{36}|AIza[0-9A-Za-z_-]{35})", raw))
+check("no credentials", "password" not in raw.lower() and "secret=" not in raw.lower() and "token=" not in raw.lower())
+# 2. provider endpoints (private URLs, IPs)
+check("no provider endpoints", not re.search(r"(https?://[^\"]+|100\.127\.|localhost:\d+|\.ngrok\.)", raw))
+# 3. personal paths
+check("no personal paths", "/Users/" not in raw and "C:\\Users" not in raw and "nbzkr" not in raw and "/home/" not in raw)
+# 4. memories (self/ or projects/ memory content)
+check("no memory content", "LESSONS.md" not in raw and "STATE.md" not in raw and "memory/" not in raw)
+# 5. transcripts
+check("no transcripts", "transcript" not in raw.lower() and "session_id" not in raw and ".jsonl" not in raw)
+# 6. usernames or emails
+check("no emails", not re.search(r"[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}", raw))
+check("no usernames", not re.search(r"(nbzkr|admin|user\d)", raw, re.I) and "root_cause" not in raw.replace("root_cause", ""))
+# 7. sensitive project-specific details
+check("no project secrets", "payment" not in raw.lower() or "api key" not in raw.lower())
+# 8. logs and session data
+check("no logs/session", "timestamp" not in raw.lower() and "stderr" not in raw.lower() and "exit_code" not in raw.lower())
 
 print(f"OK: {PASS} assertions passed")

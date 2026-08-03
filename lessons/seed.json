@@ -1,6 +1,6 @@
 {
   "version": "1.5.1",
-  "description": "Generic, reusable, privacy-safe lessons distilled from the v1.5.0 release session. Copied to ~/.claude/lessons/ on install ONLY if the ledger is empty — never overwrites user lessons. No personal data, no secrets, no paths.",
+  "description": "Generic, reusable, privacy-safe lessons distilled from the v1.5.0 release session. Copied to ~/.claude/lessons/ on install ONLY if the ledger is empty \u2014 never overwrites user lessons. No personal data, no secrets, no paths.",
   "lessons": [
     {
       "id": "test-isolation",
@@ -10,7 +10,8 @@
       "layer": "regression-test",
       "recurrence_risk": "high",
       "tested": true,
-      "test_ref": "hooks/lib/test_ci_parity.py"
+      "test_ref": "hooks/lib/test_ci_parity.py",
+      "status": "tested"
     },
     {
       "id": "local-vs-ci-parity",
@@ -20,7 +21,8 @@
       "layer": "ci-gate",
       "recurrence_risk": "high",
       "tested": true,
-      "test_ref": ".github/workflows/validate.yml"
+      "test_ref": ".github/workflows/validate.yml",
+      "status": "tested"
     },
     {
       "id": "version-consistency",
@@ -30,7 +32,8 @@
       "layer": "hook",
       "recurrence_risk": "medium",
       "tested": true,
-      "test_ref": "claude-health.sh"
+      "test_ref": "claude-health.sh",
+      "status": "tested"
     },
     {
       "id": "ambiguous-loop-variable",
@@ -40,7 +43,8 @@
       "layer": "hook",
       "recurrence_risk": "medium",
       "tested": true,
-      "test_ref": "hooks/verify-edit.sh"
+      "test_ref": "hooks/verify-edit.sh",
+      "status": "tested"
     },
     {
       "id": "self-referential-scan",
@@ -50,7 +54,8 @@
       "layer": "hook",
       "recurrence_risk": "medium",
       "tested": true,
-      "test_ref": "hooks/lib/scan.py"
+      "test_ref": "hooks/lib/scan.py",
+      "status": "tested"
     }
   ]
 }

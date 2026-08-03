@@ -1,0 +1,34 @@
+# pre-push — the "push before locally-catchable checks" regression (v1.5.1 req 9).
+# The v1.5.0 lesson: 5 CI failures were all locally-catchable issues pushed to
+# main first. This hook runs the local verification BEFORE any push; if it
+# fails, the push is blocked and the failure is caught locally, not in CI.
+#
+# Exit 1 blocks the push. Re-edit, re-verify, then push. Never --no-verify
+# (CI is the backstop, but the point is to catch it locally first).
+set +e
+
+REPO="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+cd "$REPO" || exit 1
+
+echo "[pre-push] running local verification (check + health + plan-check)..."
+
+# 1. full check (lint + typecheck + self-checks)
+if ! pnpm run check >/dev/null 2>&1; then
+  echo "[pre-push] BLOCKED: pnpm run check failed — fix locally before pushing."
+  exit 1
+fi
+
+# 2. health (incl. version consistency + YAML validity)
+if ! bash claude-health.sh >/dev/null 2>&1; then
+  echo "[pre-push] BLOCKED: claude-health failed — fix locally before pushing."
+  exit 1
+fi
+
+# 3. plan-check (release gate over open items)
+if ! python scripts/plan-check.py --release >/dev/null 2>&1; then
+  echo "[pre-push] BLOCKED: plan-check failed (open non-deferred items) — fix before pushing."
+  exit 1
+fi
+
+echo "[pre-push] local verification passed — push allowed."
+exit 0

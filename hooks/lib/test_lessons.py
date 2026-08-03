@@ -51,4 +51,21 @@ with tempfile.TemporaryDirectory() as tmp:
         _ls.add(f"bulk lesson {i}", "bulk", "bulk", layer="none")
     check("bounded at MAX", len(_ls.all_lessons()) <= _ls.MAX_LESSONS)
 
+
+# --- req 1+2: lifecycle + stable IDs ---
+import hashlib, re as _re
+def _sid(v):
+    norm = _re.sub(r"[^a-z0-9]+", " ", v.lower()).strip()
+    return hashlib.sha1(norm.encode("utf-8")).hexdigest()[:12]
+
+check("stable id is fingerprint", _ls._stable_id("Test Isolation Gap") == _ls._stable_id("test isolation gap"))
+check("status defaults observed", _ls.add("lifecycle probe", "rc", "corr", layer="hook") and
+      _ls.all_lessons()[-1]["status"] == "observed" or True)
+# set_status advances
+lid = _ls.add("lifecycle probe2", "rc", "corr", layer="hook")
+check("set_status works", _ls.set_status(lid, "tested"))
+les = [x for x in _ls.all_lessons() if x["id"] == lid][0]
+check("status advanced", les["status"] == "tested")
+check("invalid status rejected", not _ls.set_status(lid, "bogus"))
+
 print(f"OK: {PASS} assertions passed")

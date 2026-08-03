@@ -38,16 +38,20 @@ def _find(rel: str) -> bool:
 def check():
     if not LESSONS_DIR.exists():
         return []
+    # Lifecycle: a lesson is "learned" only at enforced/tested/closed.
+    # observed/confirmed/generalized = recorded but NOT yet prevented.
+    LEARNED = {"enforced", "tested", "closed"}
     problems = []
     for p in sorted(LESSONS_DIR.glob("*.json")):
         try:
             les = json.loads(p.read_text(encoding="utf-8"))
         except Exception:
             continue
-        if les.get("recurrence_risk") == "high" and not les.get("tested"):
-            problems.append(f"at-risk untested: {les.get('violation','?')} "
-                            f"(layer={les.get('layer','?')}) — it will recur silently")
-        if les.get("tested") and les.get("test_ref") and not _find(les["test_ref"]):
+        status = les.get("status", "observed")
+        if les.get("recurrence_risk") == "high" and status not in LEARNED:
+            problems.append(f"at-risk NOT learned: {les.get('violation','?')} "
+                            f"(status={status}, layer={les.get('layer','?')}) — it will recur silently")
+        if status in LEARNED and les.get("test_ref") and not _find(les["test_ref"]):
             problems.append(f"prevention broken: {les.get('violation','?')} — "
                             f"test_ref {les['test_ref']} not found")
     return problems
