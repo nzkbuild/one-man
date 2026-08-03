@@ -26,8 +26,8 @@ SKIP_DIRS = {"node_modules", "venv", ".venv", ".git", "__pycache__", "dist", "bu
 NO_ALT = re.compile(r"<img\b(?![^>]*\balt=)[^>]*>", re.IGNORECASE)
 # a11y: input/button without accessible name (placeholder-only is not a label)
 NO_LABEL = re.compile(r"<(input|button)\b(?![^>]*\b(?:aria-label|label|name)=)[^>]*>", re.IGNORECASE)
-# placeholder content
-PLACEHOLDER = re.compile(r"\b(lorem ipsum|TODO text|example\.com|placeholder|dummy text)\b", re.IGNORECASE)
+# placeholder content (real TODOs are caught by review-gate/ship-gate, not here)
+PLACEHOLDER = re.compile(r"\b(lorem ipsum|example\.com|placeholder|dummy text)\b", re.IGNORECASE)
 # generic AI output markers
 AI_SLOP = re.compile(r"\b(welcome to our|get started today|revolutioniz|unleash|supercharge)\b", re.IGNORECASE)
 
