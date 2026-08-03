@@ -1,0 +1,64 @@
+{
+  "$comment": [
+    "one-man settings template — the BASELINE discipline config.",
+    "Install copies this to ~/.claude/settings.json via deep-merge (jq),",
+    "preserving YOUR existing env/model/permissions and ADDING the hooks.",
+    "This file ships NO personal data: no API keys, no baseURL, no model names.",
+    "Fill in your own provider env AFTER install, or keep your existing settings",
+    "and let the merge keep yours."
+  ],
+  "env": {
+    "$comment": "YOUR provider key goes here, or leave unset and use the OS env var.",
+    "ANTHROPIC_BASE_URL": "REPLACE_WITH_YOUR_BASE_URL",
+    "ANTHROPIC_API_KEY": "REPLACE_WITH_YOUR_KEY"
+  },
+  "model": "REPLACE_WITH_YOUR_DEFAULT_MODEL",
+  "hooks": {
+    "$comment": "The 14 discipline hooks. Paths are filled by install.sh / install.ps1.",
+    "SessionStart": [],
+    "PreCompact": [],
+    "UserPromptSubmit": [],
+    "PreToolUse": [],
+    "PostToolUse": [],
+    "SubagentStop": [],
+    "Notification": [],
+    "Stop": []
+  },
+  "permissions": {
+    "allow": [
+      "Bash(git status:*)",
+      "Bash(git diff:*)",
+      "Bash(git log:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(pnpm test:*)",
+      "Bash(pnpm build:*)",
+      "Bash(python:*)",
+      "Bash(node:*)",
+      "Bash(npx:*)",
+      "Read:*.md",
+      "Read:*.py",
+      "Read:*.ts",
+      "Read:*.tsx",
+      "Read:*.js",
+      "Read:*.json"
+    ],
+    "deny": [
+      "Read(**/.env)",
+      "Read(**/.env.local)",
+      "Read(**/.env.production)",
+      "Read(**/.env.development)",
+      "Read(**/credentials.json)",
+      "Read(**/secrets.json)",
+      "Read(**/*.pem)",
+      "Read(**/id_rsa*)",
+      "Bash(curl:*)",
+      "Bash(wget:*)",
+      "Bash(git push --force:*)",
+      "Bash(git reset --hard:*)"
+    ],
+    "$comment2": "deny rules are GLOSS not regex: `*` is a wildcard. These bind at session start."
+  },
+  "skipDangerousModePermissionPrompt": true,
+  "$comment3": "skipDangerousModePermissionPrompt=true is the AUTONOMY choice: no prompts for dangerous tools. The deny rules + danger-guard hook are the real guardrails. Set false if you want prompts back."
+}

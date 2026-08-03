@@ -1,0 +1,50 @@
+name: validate
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test-linux:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - name: Install
+        run: pnpm install --frozen-lockfile --ignore-scripts
+      - name: Lint + typecheck + test
+        run: pnpm run check
+      - name: Pass hook self-checks (python)
+        run: for f in hooks/test_*.py; do python3 "$f"; done
+      - name: Install dry-run (linux)
+        run: bash scripts/install.sh --dry-run
+        env:
+          HOME: /tmp/one-man-fake-home
+
+  test-windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - name: Install
+        run: pnpm install --frozen-lockfile --ignore-scripts
+      - name: Hook self-checks (python)
+        run: |
+          if (Get-ChildItem hooks/test_*.py) { Get-ChildItem hooks/test_*.py | ForEach-Object { python $_.FullName } }
+      - name: Install dry-run (windows)
+        run: powershell -ExecutionPolicy Bypass -File scripts/install.ps1 -DryRun
+        env:
+          HOME: ${{ runner.temp }}\one-man-fake-home

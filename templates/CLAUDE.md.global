@@ -1,0 +1,66 @@
+# one-man global discipline — CLAUDE.md template
+
+> Installed to `~/.claude/CLAUDE.md` (with backup of any existing file).
+> This file carries the *discipline* teeth — protocol, process, standards, anti-patterns.
+> Project-level CLAUDE.md files carry the *stack* (architecture, commands, gotchas).
+> Both stay at full strength; do not compress either.
+
+## Protocol — 10 standing principles (stable)
+
+1. **Mechanical over prose.** Enforce with hooks/linters/type-checkers, not paragraphs.
+2. **Evidence before assumption.** Inspect and run before claiming anything works.
+3. **Correctness before expansion.** Fix the foundation before adding tools or features.
+4. **Appropriate engineering.** Simplest correct solution; overkill is also a defect.
+5. **No false completion.** Distinguish: implemented, tested, partial, blocked, assumed.
+6. **Reversible and auditable.** Backup before destructive changes; never expose secrets.
+7. **Work autonomously by default.** Do not wait for permission on routine local work;
+   hard-deny secrets and dangerous ops via settings + hooks, not by asking.
+8. **Report in plain language.** Terms explained; decisions given as one recommendation.
+9. **Never bypass hooks or commit secrets.** No --no-verify; keys by reference only.
+10. **Stay local by default.** No cloud upload, no publishing without explicit ask.
+
+## Process — triage
+
+| Task size | Examples | Process |
+|-----------|----------|---------|
+| Trivial | typo, one-line fix | action → verify → done |
+| Small | add a function, small UI tweak | explore → implement → verify → done |
+| Medium | new feature, endpoint | brainstorm → brief design → implement → verify |
+| Large | new subsystem, greenfield, architecture | brainstorm → design doc → plan → implement → verify → checkpoint |
+
+When in doubt, go one level up.
+
+## Standards
+
+- **Security:** validate every trust boundary, parameterized SQL, no hardcoded secrets,
+  idempotency + concurrency guards, vet dependencies before adding.
+- **Testing:** part of the change. Unit for logic, integration for API/db, E2E for
+  critical flows. Test the unhappy path. Omitted categories = intentional + stated.
+- **Error handling:** every error path has user feedback + logging. External calls:
+  timeouts, retries, backoff. Design for partial failures.
+- **Performance:** no premature optimization; N+1 → JOIN/IN; paginate unbounded growth;
+  index WHERE/JOIN/ORDER BY columns.
+- **Design:** no generic AI output. Real users, real content, a11y (WCAG 2.2 AA),
+  keyboard nav, focus visibility, honest states.
+- **Health:** every service has a health check + diagnostics.
+
+## Anti-patterns — never do
+
+- "Done!" without running build + tests
+- Inventing APIs, versions, or library features
+- Adding a dependency without checking installed ones
+- Silent catch blocks
+- Hardcoding secrets/ports/URLs/env-specific values
+- Designing only the happy path
+- Interface with one implementation; factory for one product
+- Config for a value that never changes
+- "I'll add tests later" / "I'll add error handling later"
+- Rewriting unrelated files
+
+## Tool discipline
+
+- context-mode is the first lookup; keep raw bytes out of context.
+- ponytail (minimalism ladder) always active: reuse > add, stdlib > dep, delete > keep.
+- superpowers process skills for medium+ work: brainstorm → plan → verify.
+- Validate third-party tools before installing: repo exists, README read, fake social
+  proof disqualifies.

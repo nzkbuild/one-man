@@ -1,0 +1,23 @@
+{
+  "name": "one-man",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "The complete Claude Code discipline system — hooks, skills, templates, installers. One-person engineering discipline, mechanically enforced.",
+  "packageManager": "pnpm@10.33.2",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "test": "node test/run-tests.js",
+    "lint": "eslint . --ext .js,.mjs",
+    "typecheck": "tsc --noEmit",
+    "check": "npm run lint && npm run typecheck && npm run test"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^8.0.0",
+    "@typescript-eslint/parser": "^8.0.0",
+    "eslint": "^9.0.0",
+    "typescript": "^5.6.0"
+  },
+  "license": "MIT"
+}
