@@ -22,6 +22,8 @@ jobs:
         run: pnpm run check
       - name: Pass hook self-checks (python)
         run: for f in hooks/test_*.py; do python3 "$f"; done
+      - name: Plan-check (open items must not ship under a release)
+        run: python3 scripts/plan-check.py --release
       - name: Install dry-run (linux)
         run: bash scripts/install.sh --dry-run
         env:
@@ -42,6 +44,7 @@ jobs:
       - name: Hook self-checks (python)
         run: |
           if (Get-ChildItem hooks/test_*.py) { Get-ChildItem hooks/test_*.py | ForEach-Object { python $_.FullName } }
+          python scripts/plan-check.py --release
       - name: Install dry-run (windows)
         run: powershell -ExecutionPolicy Bypass -File scripts/install.ps1 -DryRun
         env:
