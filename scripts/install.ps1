@@ -83,16 +83,23 @@ if (Test-Path (Join-Path $ClaudeHome "settings.json")) {
     python (Join-Path $Repo "scripts\merge_settings.py") $ClaudeHome $ClaudeHome --init
 }
 
-# ---------- Step 8: validate ----------
-Say "Validate hook wiring"
-python (Join-Path $ClaudeHome "hooks\settings-validate.py") 2>$null
-python (Join-Path $ClaudeHome "hooks\hook-health.py") 2>$null
-Say "Hook self-checks:"
-Push-Location (Join-Path $ClaudeHome "hooks")
-python test_danger_guard.py
-python test_dep_guard.py
-python test_ship_gate.py
-Pop-Location
+# ---------- Step 8: validate (real run only; dry-run must not execute python) ----------
+if (-not $DryRun) {
+    Say "Validate hook wiring"
+    try { python (Join-Path $ClaudeHome "hooks\settings-validate.py") 2>$null } catch {}
+    try { python (Join-Path $ClaudeHome "hooks\hook-health.py") 2>$null } catch {}
+    Say "Hook self-checks:"
+    Push-Location (Join-Path $ClaudeHome "hooks")
+    python test_danger_guard.py
+    if ($LASTEXITCODE) { Pop-Location; Die "danger-guard self-check failed" }
+    python test_dep_guard.py
+    if ($LASTEXITCODE) { Pop-Location; Die "dep-guard self-check failed" }
+    python test_ship_gate.py
+    if ($LASTEXITCODE) { Pop-Location; Die "ship-gate self-check failed" }
+    Pop-Location
+} else {
+    Say "Dry-run: skipping validation (would run hook self-checks on real install)"
+}
 
 # ---------- Step 9: done ----------
 Say "Install complete. Restart Claude Code to bind settings permissions."
