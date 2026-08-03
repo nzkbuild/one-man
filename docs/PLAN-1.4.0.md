@@ -58,9 +58,9 @@ tune. The "post-mortem" of the system itself. Scheduled via cron/Task Scheduler
 
 ## Definition of done (self-checked, CI green, plan-check `[x]`)
 
-- [ ] hotspot-report flags a correction cluster in fixture stats; silent on clean
-- [ ] release.sh runs the checklist on a fixture repo (dry-run mode)
-- [ ] CI observe job runs claude-health against fixture HOME
-- [ ] loop-report.sh writes a dated synthesis from fixture stats
-- [ ] 3 new self-checks in runner (14 total), CI green both OSes
-- [ ] v1.4.0 tagged on CI-green commit, CHANGELOG entry
+- [x] hotspot-report flags a correction cluster in fixture stats; silent on clean
+- [x] release.sh runs the checklist on a fixture repo (dry-run mode)
+- [x] CI observe job runs claude-health against fixture HOME
+- [x] loop-report.sh writes a dated synthesis from fixture stats
+- [x] 3 new self-checks in runner (14 total), CI green both OSes
+- [x] v1.4.0 tagged on CI-green commit, CHANGELOG entry

@@ -5,6 +5,32 @@ All notable changes to one-man. Format: Keep a Changelog
 
 ## [Unreleased]
 
+## [1.4.0] - 2026-08-04
+
+### Added
+- `hotspot-report` (SessionStart): behavioral feedback from stats.json — flags
+  correction clusters, scope drift, test-discipline slip. Guide only; the human
+  tunes, nothing auto-weakens.
+- `scripts/release.sh`: automates the release checklist (check, plan-check,
+  CHANGELOG gate, tag, push, CI wait) — the repo's own deploy stage.
+- `scripts/loop-report.sh`: monthly synthesis (what fired, what to tune) — the
+  system's post-mortem.
+- CI observe job: claude-health against a fixture HOME after each push.
+- docs/PLAN-1.4.0.md: the iterative-leap spec (tracked by plan-check).
+
+### Fixed
+- loop-report used python3 (Windows alias); now python.
+
+
+## [1.3.1] - 2026-08-04
+
+### Fixed
+- Hook wrappers merged stderr into stdout, hiding findings from the harness
+  ("No stderr output" on every clean run). stderr now passes through.
+- design-review TODO pattern self-matched review-gate; removed (real TODOs
+  caught by review-gate/ship-gate).
+
+
 ## [1.3.0] - 2026-08-04
 
 ### Added
