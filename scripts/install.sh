@@ -66,6 +66,9 @@ cp -f "$REPO/self/PRINCIPLES.md.template" "$CLAUDE_HOME/self/PRINCIPLES.md" 2>/d
 # PREFERENCES is user-curated — only write if missing.
 [ -f "$CLAUDE_HOME/self/PREFERENCES.md" ] || cp "$REPO/self/PREFERENCES.md.template" "$CLAUDE_HOME/self/PREFERENCES.md" 2>/dev/null || true
 
+# ---------- Step 5.5: skills.flow.json (systematic reuse routing) ----------
+cp "$REPO/skills.flow.json" "$CLAUDE_HOME/skills.flow.json" 2>/dev/null || true
+
 # ---------- Step 6: global CLAUDE.md (backup done in step 1) ----------
 say "Install global CLAUDE.md (backup made)"
 cp "$REPO/templates/CLAUDE.md.global" "$CLAUDE_HOME/CLAUDE.md"

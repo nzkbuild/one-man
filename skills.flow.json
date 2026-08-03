@@ -1,0 +1,47 @@
+{
+  "version": "1.2.0",
+  "description": "The systematic-reuse routing table. Consumed by task-triage (and readable by any skill). Maps every task type to the skills that must run for it — so nothing installed sits idle. Install copies this to ~/.claude/skills.flow.json.",
+  "default": ["pro-workflow"],
+  "bug": [
+    "superpowers:systematic-debugging",
+    "self-evolve"
+  ],
+  "feature": [
+    "superpowers:brainstorming",
+    "superpowers:writing-plans",
+    "pro-workflow",
+    "checkpoint"
+  ],
+  "refactor": [
+    "pro-workflow",
+    "simplify",
+    "superpowers:test-driven-development"
+  ],
+  "question": [
+    "ctx-agent-history-search",
+    "recall"
+  ],
+  "chore": [
+    "dep-audit",
+    "checkpoint"
+  ],
+  "design": {
+    "description": "UI/UX work routes through the design skill chain — anti-slop for interfaces.",
+    "chain": [
+      "brandkit",
+      "design-taste-frontend",
+      "minimalist-ui"
+    ],
+    "variants": {
+      "industrial": "industrial-brutalist-ui",
+      "imagegen": ["imagegen-frontend-web", "imagegen-frontend-mobile"]
+    }
+  },
+  "triggers": {
+    "phase-boundary": ["audit"],
+    "correction": ["self-evolve"],
+    "new-dependency": ["dep-audit"],
+    "milestone": ["checkpoint"],
+    "turn-end": ["superpowers:verification-before-completion"]
+  }
+}

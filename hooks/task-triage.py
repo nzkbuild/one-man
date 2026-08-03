@@ -58,6 +58,14 @@ TASKS = [
         "Pre-mortem: backup/rollback path first, verify after, no silent behavior change.",
         "Exit: change applied, verified, reversible.",
     ),
+    (
+        "design",
+        [r"\b(design|ui|ux|interface|layout|page|component|visual|styling|frontend|mobile app)\b"],
+        "Pre-mortem: run the design skill chain (brandkit -> design-taste -> "
+        "minimalist-ui); real users, real content, a11y (WCAG 2.2 AA), no generic "
+        "AI-looking output.",
+        "Exit: design follows the chain, a11y checked, no generic slop.",
+    ),
 ]
 
 
@@ -82,8 +90,12 @@ def classify(prompt: str):
 
 
 def skills_for(ttype: str, flow: dict):
-    """Look up the skill route for this task type from the flow manifest."""
-    return flow.get(ttype, flow.get("default", []))
+    """Look up the skill route for this task type from the flow manifest.
+    A design-style entry stores its route under 'chain' — unwrap it."""
+    route = flow.get(ttype, flow.get("default", []))
+    if isinstance(route, dict) and "chain" in route:
+        return route["chain"]
+    return route
 
 
 def main():

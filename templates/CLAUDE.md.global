@@ -64,3 +64,16 @@ When in doubt, go one level up.
 - superpowers process skills for medium+ work: brainstorm → plan → verify.
 - Validate third-party tools before installing: repo exists, README read, fake social
   proof disqualifies.
+
+## Anti-slop principle (the systematic-reuse rule)
+
+- **Every skill that applies must be invoked.** Idle skills are the gap. The
+  `skills.flow.json` routing table (read by task-triage) decides which skills run
+  for each task type; follow it — do not "skip the chain" because you know the answer.
+- Design/UI work goes through the design skill chain (brandkit → design-taste →
+  minimalist-ui) — never straight to markup.
+- Output must be reviewed against the repo's own standards, not just pass lint:
+  no generic AI-looking interfaces, no invented APIs, no placeholder logic.
+- **A mistake repeated is a process failure.** When corrected: fix the instance,
+  then capture the rule via /self-evolve so it persists. The feedback loop
+  (retrospective → stats.json → hotspot-report) exists to catch what memory misses.

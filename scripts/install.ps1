@@ -71,6 +71,9 @@ if (-not (Test-Path (Join-Path $ClaudeHome "self\PREFERENCES.md"))) {
     Run Copy-Item (Join-Path $Repo "self\PREFERENCES.md.template") (Join-Path $ClaudeHome "self\PREFERENCES.md")
 }
 
+# ---------- Step 5.5: skills.flow.json ----------
+Run Copy-Item (Join-Path $Repo "skills.flow.json") (Join-Path $ClaudeHome "skills.flow.json") -Force
+
 # ---------- Step 6: global CLAUDE.md ----------
 Say "Install global CLAUDE.md (backup made)"
 Run Copy-Item (Join-Path $Repo "templates\CLAUDE.md.global") (Join-Path $ClaudeHome "CLAUDE.md") -Force

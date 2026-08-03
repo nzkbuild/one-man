@@ -37,4 +37,9 @@ check("feature routes", _tt.skills_for("feature", flow) == ["brainstorming", "wr
 check("unknown routes to default", _tt.skills_for("weird", flow) == ["pro-workflow"])
 check("missing flow -> empty", _tt.skills_for("bug", {}) == [])
 
+
+# design routing via flow
+flow_design = {"design": {"chain": ["brandkit", "design-taste-frontend", "minimalist-ui"]}}
+check("design routes to chain", _tt.skills_for("design", flow_design) == ["brandkit", "design-taste-frontend", "minimalist-ui"])
+
 print(f"OK: {PASS} assertions passed")
