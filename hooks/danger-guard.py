@@ -202,4 +202,11 @@ if __name__ == "__main__":
     try:
         main()
     except Exception:
+        # v1.5.0 M6: safety control — with ONE_MAN_FAIL_CLOSED=1, a crash in
+        # the guard itself must NOT silently disarm into "all good". Fail
+        # closed (block) + name the failure. Default: fail-open (availability).
+        if os.environ.get("ONE_MAN_FAIL_CLOSED") == "1":
+            print("danger-guard FAILED CLOSED: internal error — do not proceed "
+                  "as if this guard ran.", file=sys.stderr)
+            sys.exit(2)
         sys.exit(0)

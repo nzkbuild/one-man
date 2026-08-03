@@ -71,6 +71,9 @@ if (-not (Test-Path (Join-Path $ClaudeHome "self\PREFERENCES.md"))) {
     Run Copy-Item (Join-Path $Repo "self\PREFERENCES.md.template") (Join-Path $ClaudeHome "self\PREFERENCES.md")
 }
 
+# ---------- Step 5.6: control criticality ----------
+Run Copy-Item (Join-Path $Repo "one-man.controls.json") (Join-Path $ClaudeHome "one-man.controls.json") -Force
+
 # ---------- Step 5.5: skills.flow.json ----------
 Run Copy-Item (Join-Path $Repo "skills.flow.json") (Join-Path $ClaudeHome "skills.flow.json") -Force
 

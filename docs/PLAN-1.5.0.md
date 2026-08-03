@@ -135,9 +135,9 @@ One new artifact, three changes, zero new plugins/hooks-of-new-kind:
 - **AC:** high-risk tasks require context-isolated review (fresh subagent: diff+task+conventions only); findings recorded as evidence kind=isolated_review; gate blocks without it.
 - **Result (verified):** review-gate blocks high-risk without isolated_review evidence, passes with it; 3 new assertions (9 total in review-gate test).
 
-### M6 — criticality + CI
-- **AC:** `one-man.controls.json` declares criticality; safety control fails closed when its own code breaks (fixture); CI job runs the evidence gate on a fixture task and passes.
-- **Test:** fixture — break a safety control's import → with declaration, blocks + logs; without, fails open (preserved default).
+### M6 — criticality + CI ✅ DONE
+- **AC:** one-man.controls.json declares criticality; safety controls fail closed under ONE_MAN_FAIL_CLOSED=1; CI runs the evidence gate on a fixture task.
+- **Result (verified):** controls.py reads the declaration (user override > repo, broken config falls through); danger-guard fail-closed verified (crash+toggle -> exit 2 "FAILED CLOSED"); CI evidence-gate job added (blocks without proof); installers copy the declaration. 8-assertion controls self-check; 16/16 runner.
 
 ### M7 — release
 - **AC:** 12+ self-checks green (now 12 + new), plan-check `[x]`, CI green both OSes, CHANGELOG, tag v1.5.0.
