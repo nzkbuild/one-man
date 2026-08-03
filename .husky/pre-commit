@@ -1,0 +1,20 @@
+pnpm exec lint-staged
+
+# Secret scanner — blocks commits that would leak keys/credentials.
+# Catches what lint cannot: API keys, private certs, personal paths.
+# Exit 1 blocks the commit; re-edit, don't --no-verify.
+if git diff --cached --name-only -z | xargs -0 -r cat 2>/dev/null | grep -nE \
+  "(sk-[A-Za-z0-9]{20,}|AKIA[0-9A-Z]{16}|(-----BEGIN (RSA |EC |OPENSSH )?PRIVATE KEY-----)|ghp_[A-Za-z0-9]{36}|xox[baprs]-[A-Za-z0-9-]+|AIza[0-9A-Za-z_-]{35})"; then
+  echo "BLOCKED: possible secret in staged diff. Remove it and re-commit."
+  echo "If this is a false positive (test fixture), add the file to .gitignore NOT here."
+  exit 1
+fi
+
+# Reject hard-coded personal paths that would leak the author's machine.
+if git diff --cached --name-only -z | xargs -0 -r cat 2>/dev/null | grep -nE \
+  "C:\\\\Users\\\\[A-Za-z0-9_]+|/c/Users/[A-Za-z0-9_]+|/home/[a-z]+/" | grep -vE "\.(md|txt)$"; then
+  echo "BLOCKED: hard-coded user path in staged diff (non-doc). Use relative/$HOME."
+  exit 1
+fi
+
+pnpm test

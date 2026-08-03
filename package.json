@@ -11,12 +11,21 @@
     "test": "node test/run-tests.js",
     "lint": "eslint . --ext .js,.mjs",
     "typecheck": "tsc --noEmit",
-    "check": "npm run lint && npm run typecheck && npm run test"
+    "check": "npm run lint && npm run typecheck && npm run test",
+    "prepare": "husky"
+  },
+  "lint-staged": {
+    "*.{js,mjs,ts}": "eslint --fix",
+    "*.py": "python -m py_compile"
   },
   "devDependencies": {
+    "@commitlint/cli": "^21.2.1",
+    "@commitlint/config-conventional": "^21.2.0",
     "@typescript-eslint/eslint-plugin": "^8.0.0",
     "@typescript-eslint/parser": "^8.0.0",
     "eslint": "^9.0.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^17.3.0",
     "typescript": "^5.6.0"
   },
   "license": "MIT"
