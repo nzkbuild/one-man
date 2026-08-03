@@ -75,7 +75,7 @@ def main():
         ("PostToolUse", "Bash|PowerShell", ["dep-guard.sh"]),
         ("SubagentStop", "*", ["subagent-guard.sh"]),
         ("Notification", "*", ["notify-alert.sh"]),
-        ("Stop", "*", ["verify-turn.sh"]),
+        ("Stop", "*", ["verify-turn.sh", "review-gate.sh"]),
         ("SessionEnd", "*", ["retrospective.sh"]),
     ]
 
