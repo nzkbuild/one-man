@@ -158,6 +158,19 @@ def main():
     if state:
         parts.append(f"# Current working state for '{proj_name}' (from STATE.md)\n" + state)
 
+    # --- Lesson ledger (v1.5.1): filtered relevance digest, token-disciplined ---
+    try:
+        sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "lib"))
+        import lessons as _lessons
+        _signals = f"{proj_name} {os.path.basename(cwd)}"
+        _relevant = _lessons.relevant(_signals)
+        if _relevant:
+            lines = [f"- [{les.get('layer','?')}] {les.get('violation','?')} "
+                     f"(risk {les.get('recurrence_risk','?')})" for les in _relevant]
+            parts.append("# Relevant past lessons (ledger)\n" + "\n".join(lines))
+    except Exception:
+        pass
+
     # --- Project CLAUDE.md (the richest instruction file) ---
     claude_md = os.path.join(cwd, "CLAUDE.md")
     cm_text = read_text(claude_md).strip()

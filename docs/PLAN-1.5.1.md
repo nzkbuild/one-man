@@ -62,7 +62,7 @@
 ## 3. Acceptance criteria + tests
 
 - **M1:** ✅ DONE — hooks/lib/lessons.py (add/all/high_risk_untested/relevant, bounded 30); self-evolve SKILL.md gains the ledger step (layer decision table). 9-assertion self-check.
-- **M2:** check-lessons detects a `recurrence_risk: high, tested: false` lesson; silent when clean; SessionStart injects only project-relevant lessons (fixture signals). 6 assertions.
+- **M2:** ✅ DONE — scripts/check-lessons.py (high-risk untested + broken-prevention detection, exit 2); session-context injects a filtered relevance digest (token-disciplined, capped 5); runner includes the script test. 6-assertion self-check.
 - **M3:** regression test asserts hook tests run isolated (the F6 class); health check fails when version mismatches tag. 4 assertions.
 - **M4:** seed installs when `~/.claude/lessons/` empty, never overwrites; seed contains zero personal data (scan). 3 assertions.
 
