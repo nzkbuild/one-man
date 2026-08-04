@@ -112,4 +112,14 @@ if [ -n "$PY" ] && [ -f "$GATE" ]; then
   fi
 fi
 
+# v1.7.0 M7: anti-slop outcome review — blocking classes exit 2
+AS="$( cd "${BASH_SOURCE[0]%/*}" && pwd )/lib/anti-slop.py"
+if [ -n "$PY" ] && [ -f "$AS" ]; then
+  "$PY" "$AS" 2>&1
+  AS_EXIT=$?
+  if [ "$AS_EXIT" = "2" ]; then
+    exit 2
+  fi
+fi
+
 exit 0
