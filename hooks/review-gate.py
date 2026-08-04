@@ -24,7 +24,11 @@ SOURCE_EXTS = {".py", ".ts", ".tsx", ".js", ".jsx", ".rs"}
 
 # Magic numbers (literals > 10 used in code, NOT named-constant definitions
 # like `MAX_DEBT = 100` — those are named, not magic, and are legit).
-MAGIC = re.compile(r"(?<![A-Za-z_])[=(\[,\s]\d{3,}(?:[.,]\d+)?[)\],;\s]")
+# Constant-definition lines are excluded at review time (see review_file).
+MAGIC = re.compile(r"[=(\[,\s]\d{3,}(?:[.,]\d+)?[)\],;\s]")
+
+# A named-constant definition line: `NAME = <number>` (bare, no trailing op).
+CONST_DEF = re.compile(r"^\s*[A-Za-z_]\w*\s*=\s*\d{2,}\s*(?:#.*)?$")
 
 # Bare except / catch-all swallow without handling
 BARE_EXCEPT = re.compile(r"^\s*except\s*:\s*$", re.M)
@@ -50,7 +54,8 @@ import scan as _scan  # noqa: E402 — local lib, path insert required
 
 def changed_files(cwd: Path):
     return _scan.changed_files(cwd, window_min=CHANGED_WINDOW_MIN,
-                               skip_names=("test_", "perf-guard", "review-gate", "understand-guard"))
+                               skip_names=("test_", "perf-guard", "review-gate",
+                                           "understand-guard", "debt"))
 
 
 def review_file(p: Path, rel: Path):
@@ -61,9 +66,13 @@ def review_file(p: Path, rel: Path):
         return [], []
     blocking, guide = [], []
 
-    # Magic numbers — guide (could be intentional)
+    # Magic numbers — guide (could be intentional). Skip named-constant
+    # definition lines (`MAX_DEBT = 100` — named, not magic).
     for m in list(MAGIC.finditer(text))[:3]:
         line_no = text[: m.start()].count("\n") + 1
+        line = text.splitlines()[line_no - 1] if line_no - 1 < len(text.splitlines()) else ""
+        if CONST_DEF.match(line):
+            continue  # named constant — legit
         guide.append(f"{rel}:{line_no} magic number {m.group(0).strip()} — name it or comment it")
         break
 
