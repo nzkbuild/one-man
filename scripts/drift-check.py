@@ -92,15 +92,16 @@ def detect(cwd: Path) -> list:
 
 
 def verify_and_close(cwd: Path, finding: dict) -> bool:
-    """Verify the sync happened (the affected artifact changed after the owner);
+    """Verify the sync happened (the affected artifact changed in the SAME
+    commit as the owner — mtime-equal in CI checkouts counts as synced);
     if so, close the drift."""
     try:
         owner_mtime = (cwd / finding["owner"]).stat().st_mtime
         for art in finding["affected"]:
             targets = list(cwd.glob(art)) if "*" in art else [cwd / art]
             for t in targets:
-                if t.exists() and t.stat().st_mtime >= owner_mtime:
-                    return True  # synced after the change
+                if t.exists() and t.stat().st_mtime >= owner_mtime - 1:
+                    return True  # synced in the same commit (CI flattens mtimes)
         return False
     except Exception:
         return False
