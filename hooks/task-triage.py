@@ -162,8 +162,18 @@ def main():
         # v1.7.0 M3: the synthesized engineering assignment (sequenced plan)
         import assignment as _as
         _assign = _as.synthesize(_sit_class, _bs, {"type": ttype, "risk": risk})
+        # v1.7.0 M5: validate the plan; auto-repair where deterministic
+        import importlib.util as _ilu
+        _vs = _ilu.spec_from_file_location("pv", str(Path(__file__).parent / "lib" / "plan-validator.py"))
+        _pv = _ilu.module_from_spec(_vs)
+        _vs.loader.exec_module(_pv)
+        _valid, _findings, _repairs = _pv.validate(_assign, _bs)
         _plan_note = ("Engineering plan: " + " -> ".join(_assign["workstreams"])
                       + " | acceptance: " + "; ".join(_assign["acceptance"][:3]))
+        if _findings:
+            _plan_note += " | PLAN VALIDATION: " + "; ".join(_findings[:2])
+            if _repairs:
+                _plan_note += " (repair: " + "; ".join(_repairs[:2]) + ")"
     except Exception:
         _plan_note = ""
     except Exception:
