@@ -73,7 +73,9 @@ try:
     ev.append_evidence("current", "tests",
                        "failed" if failed == "1" else "passed",
                        exit_code=2 if failed == "1" else 0,
-                       files=files)
+                       files=files,
+                       capability="verify-turn",
+                       obligation="suite passes")
 except Exception:
     pass
 PYEOF
@@ -106,6 +108,16 @@ if [ -n "$PY" ] && [ -f "$GATE" ]; then
   "$PY" "$GATE" 2>&1
   GATE_EXIT=$?
   if [ "$GATE_EXIT" = "2" ]; then
+    exit 2
+  fi
+fi
+
+# v1.7.0 M7: anti-slop outcome review — blocking classes exit 2
+AS="$( cd "${BASH_SOURCE[0]%/*}" && pwd )/lib/anti-slop.py"
+if [ -n "$PY" ] && [ -f "$AS" ]; then
+  "$PY" "$AS" 2>&1
+  AS_EXIT=$?
+  if [ "$AS_EXIT" = "2" ]; then
     exit 2
   fi
 fi

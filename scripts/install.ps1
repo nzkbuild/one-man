@@ -86,6 +86,10 @@ for l in seed['lessons']:
     Say "  ledger exists - not overwriting user lessons"
 }
 
+# ---------- Step 5.5b: policy layer ----------
+New-Item -ItemType Directory -Force -Path (Join-Path $ClaudeHome "policies") | Out-Null
+Run Copy-Item (Join-Path $Repo "policies\*.json") (Join-Path $ClaudeHome "policies\") -Force
+
 # ---------- Step 5.6: control criticality ----------
 Run Copy-Item (Join-Path $Repo "one-man.controls.json") (Join-Path $ClaudeHome "one-man.controls.json") -Force
 

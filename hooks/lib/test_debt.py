@@ -62,4 +62,24 @@ with tempfile.TemporaryDirectory() as tmp:
     d = _j.loads((Path(tmp) / f"{did4}.json").read_text(encoding="utf-8"))
     check("stale debt expires", d["status"] == "expired")
 
+
+# --- v1.7.0 dogfood class fix: revalidation closes stale debt ---
+with tempfile.TemporaryDirectory() as tmp2:
+    _dt.DEBT_DIR = Path(tmp2) / "debt"
+    _dt.DEBT_DIR.mkdir()
+    # a debt whose source STILL has the finding -> stays open
+    src = Path(tmp2) / "app.py"
+    src.write_text("# TODO: real one\n")
+    did_a = _dt.create("app.py", "TODO left in changed code", severity="high", source="review-gate")
+    # a debt whose source was FIXED (no TODO in code-only) -> stale -> closed
+    src2 = Path(tmp2) / "fixed.py"
+    src2.write_text("x = 1\n")
+    did_b = _dt.create("fixed.py", "TODO left in changed code", severity="high", source="review-gate")
+    _dt.revalidate(Path(tmp2))
+    a = _j.loads((Path(tmp2) / "debt" / f"{did_a}.json").read_text(encoding="utf-8"))
+    b = _j.loads((Path(tmp2) / "debt" / f"{did_b}.json").read_text(encoding="utf-8"))
+    check("real finding stays open", a["status"] == "open")
+    check("stale finding closed", b["status"] == "closed")
+    check("stale reason recorded", b.get("closed_reason", "").startswith("stale"))
+
 print(f"OK: {PASS} assertions passed")

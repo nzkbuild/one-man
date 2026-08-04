@@ -53,7 +53,7 @@ def gate_result_in_place(evidence_dir):
 # 1. high-risk, no evidence -> block
 code, out = gate_result({"type": "bug", "risk": "high", "obligations": ["regression test"], "evidence": []})
 check("high-risk no evidence blocks", code == 2)
-check("block names the gap", "no passed test evidence" in out)
+check("block names the gap", "no capability-tied passed test evidence" in out)
 
 # 2. high-risk, passed tests -> pass
 with tempfile.TemporaryDirectory() as tmp:
@@ -61,9 +61,10 @@ with tempfile.TemporaryDirectory() as tmp:
     f = Path(tmp) / "app.py"
     f.write_text("x=1\n")
     _ev.write_record("current", {"type": "bug", "risk": "high", "obligations": ["regression test"], "evidence": []})
-    _ev.append_evidence("current", "tests", "passed", exit_code=0, files=[str(f)])
+    _ev.append_evidence("current", "tests", "passed", exit_code=0, files=[str(f)],
+                        capability="verify-turn", obligation="suite passes")
     code, _ = gate_result_in_place(Path(tmp))
-    check("high-risk with passed tests passes", code == 0)
+    check("high-risk with capability-tied passed tests passes", code == 0)
 
 # 3. STALENESS: file changed after evidence -> block
 with tempfile.TemporaryDirectory() as tmp:
@@ -71,7 +72,8 @@ with tempfile.TemporaryDirectory() as tmp:
     f = Path(tmp) / "app.py"
     f.write_text("x=1\n")
     _ev.write_record("current", {"type": "bug", "risk": "high", "obligations": ["regression test"], "evidence": []})
-    _ev.append_evidence("current", "tests", "passed", exit_code=0, files=[str(f)])
+    _ev.append_evidence("current", "tests", "passed", exit_code=0, files=[str(f)],
+                        capability="verify-turn", obligation="suite passes")
     f.write_text("x=2\n")  # code changed AFTER verification
     code, out = gate_result_in_place(Path(tmp))
     check("stale evidence blocks", code == 2)

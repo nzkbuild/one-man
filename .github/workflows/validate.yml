@@ -24,6 +24,10 @@ jobs:
         run: for f in hooks/test_*.py; do python3 "$f"; done
       - name: Plan-check (open items must not ship under a release)
         run: python3 scripts/plan-check.py --release
+      - name: "Fresh-install parity: policies load + runtime + evidence + gate"
+        run: |
+          rm -rf /tmp/fixture-home
+          FIXTURE_HOME=/tmp/fixture-home python3 scripts/test_fresh_install.py
       - name: "Anti-drift: high-severity open drift blocks"
         run: python3 scripts/drift-check.py
       - name: "Policy layer: versioned + valid (no silent undocumented policy)"

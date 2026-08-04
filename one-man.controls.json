@@ -1,5 +1,5 @@
 {
-  "version": "1.6.0",
+  "version": "1.7.0",
   "description": "Explicit control criticality (v1.5.0 M6). Declares what each control must do on failure so a silently-disarmed guard is impossible to mistake for 'all good'. safety = fail closed (on its own failure, block + log); quality = block completion/release; advisory = warn only.",
   "controls": {
     "danger-guard": {

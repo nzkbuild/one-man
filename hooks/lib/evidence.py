@@ -68,19 +68,29 @@ def write_record(task_id: str, data: dict):
         pass
 
 
-def append_evidence(task_id: str, kind: str, result: str, exit_code=None, files=None):
-    """Append one evidence entry (verify-turn: test result; review-gate: findings)."""
+def append_evidence(task_id: str, kind: str, result: str, exit_code=None, files=None,
+                    capability=None, obligation=None):
+    """Append one evidence entry (verify-turn: test result; review-gate: findings).
+
+    v1.7.0 M2: capability + obligation tie the evidence to WHICH engineering
+    capability satisfied WHICH obligation — proof of obligation, not invocation.
+    """
     try:
         rec = read_record(task_id) or {}
         rec.setdefault("evidence", [])
-        rec["evidence"].append({
+        entry = {
             "kind": kind,
             "result": result,
             "exit_code": exit_code,
             "files": list(files) if files else [],
             "state_hash": state_hash(files),
             "ts": time.time(),
-        })
+        }
+        if capability:
+            entry["capability"] = capability
+        if obligation:
+            entry["obligation"] = obligation
+        rec["evidence"].append(entry)
         rec.setdefault("created", time.time())
         rec.setdefault("completed", False)
         _path(task_id).write_text(json.dumps(rec, indent=2), encoding="utf-8")

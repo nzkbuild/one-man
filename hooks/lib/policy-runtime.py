@@ -94,11 +94,13 @@ def evaluate(task_record: dict) -> dict:
     else:
         skills = route
 
-    # v1.6.0 F3: fitness writer — record that this policy was applied.
+    # v1.6.0 F3 / v1.7.0 M1: fitness writer — record EACH policy evaluated
+    # (per-policy telemetry, not one version-keyed blob).
     try:
         sys.path.insert(0, str(Path(__file__).parent))
         import fitness as _fit
-        _fit.record(f"policy-{policy_version}", "applied")
+        for pol in ("one-man.controls", "skills.flow", "obligations", "trust"):
+            _fit.record(pol, "applied")
     except Exception:
         pass
 

@@ -79,6 +79,10 @@ else
   echo "  ledger exists — not overwriting user lessons"
 fi
 
+# ---------- Step 5.5b: policy layer (the v1.6.0 operating system) ----------
+mkdir -p "$CLAUDE_HOME/policies"
+cp "$REPO"/policies/*.json "$CLAUDE_HOME/policies/" 2>/dev/null || true
+
 # ---------- Step 5.6: control criticality ----------
 cp "$REPO/one-man.controls.json" "$CLAUDE_HOME/one-man.controls.json" 2>/dev/null || true
 

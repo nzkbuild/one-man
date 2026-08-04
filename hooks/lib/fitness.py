@@ -12,7 +12,7 @@ Tracks meaningful engineering OUTCOMES per policy, not generic counters:
 Fitness verdict (per policy):
   healthy   — low override/false-positive rate, recent activity
   watch     — rising friction (overrides/false-positives up)
-  zombie    — no applications in N sessions → deprecation candidate
+  zombie    - no applications in N sessions - deprecation candidate
 
 Constitution: engineering behaviour must never change silently. Fitness makes
 policy health observable; a policy cannot silently rot.
@@ -96,7 +96,12 @@ def verdict(policy: str) -> str:
 
 
 def report() -> list:
-    """One-line per policy: name + verdict + friction rate."""
+    """One-line per policy: name + verdict + friction rate.
+
+    Includes policies that SHOULD have telemetry but never ran (zombies from
+    the policy list) — an unrecorded policy is exactly the silent-rot signal
+    fitness exists to surface, so it must appear even with no telemetry file.
+    """
     out = []
     try:
         for p in sorted(FITNESS_DIR.glob("*.json")):
@@ -110,4 +115,25 @@ def report() -> list:
                 continue
     except Exception:
         pass
+    # policies that never produced telemetry are zombies by definition
+    for pol in _known_policies():
+        p = _path(pol)
+        if not p.exists():
+            out.append(f"[zombie] {pol} (no applications — deprecate or wire)")
     return out
+
+
+def _known_policies() -> list:
+    """The ACTUAL policy files that should have fitness telemetry — the
+    versioned engineering policies only (policies/*.json + the root policy
+    files). NOT every json in the repo (tsconfig, manifest are not policies)."""
+    repo = Path(__file__).parent.parent.parent
+    candidates = []
+    try:
+        candidates += [f.stem for f in (repo / "policies").glob("*.json")]
+    except Exception:
+        pass
+    for name in ("one-man.controls", "skills.flow"):
+        if (repo / f"{name}.json").exists():
+            candidates.append(name)
+    return candidates
