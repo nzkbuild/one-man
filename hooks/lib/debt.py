@@ -5,7 +5,7 @@ engineering findings (review-gate defects, ship-gate blocks, perf-guard hits),
 classified, lifecycle-managed, expiring when stale.
 
 Debt semantics:
-  - auto-create on mechanical findings (bare except, TODO left, N+1)
+  - auto-create on mechanical findings (bare except, deferred-work markers, N+1)
   - advisory by default — never blocks alone
   - blocks ONLY at release when: acknowledged + unfixed + high-risk
   - expires after N releases with no action (stale debt auto-closes)

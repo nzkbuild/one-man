@@ -22,8 +22,9 @@ SOURCE_EXTS = {".py", ".ts", ".tsx", ".js", ".jsx", ".rs"}
 
 # ---- Defect patterns: clear, mechanical, actionable ----
 
-# Magic numbers (literals > 10 used in code, not config/constants)
-MAGIC = re.compile(r"[=(\[,\s]\d{3,}(?:[.,]\d+)?[)\],;\s]")
+# Magic numbers (literals > 10 used in code, NOT named-constant definitions
+# like `MAX_DEBT = 100` — those are named, not magic, and are legit).
+MAGIC = re.compile(r"(?<![A-Za-z_])[=(\[,\s]\d{3,}(?:[.,]\d+)?[)\],;\s]")
 
 # Bare except / catch-all swallow without handling
 BARE_EXCEPT = re.compile(r"^\s*except\s*:\s*$", re.M)
