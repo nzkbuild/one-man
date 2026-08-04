@@ -122,11 +122,17 @@ def report() -> list:
 
 
 if __name__ == "__main__":
-    # CI/health entry: detect drift in the repo, exit 2 if high-severity open
+    # CI/health entry: detect drift; auto-close when the sync already happened;
+    # exit 2 only for high-severity drift that is genuinely unresolved.
     try:
         cwd = Path(os.environ.get("DRIFT_CWD", os.getcwd()))
         findings = detect(cwd)
-        open_high = [f for f in findings if f["status"] == "open" and f["severity"] == "high"]
+        open_high = []
+        for f in findings:
+            if verify_and_close(cwd, f):
+                f["status"] = "closed"  # sync verified — not drift anymore
+            elif f["severity"] == "high":
+                open_high.append(f)
         if open_high:
             print("## Drift — high-severity open (fix or approve-skip):", file=sys.stderr)
             for f in open_high[:5]:

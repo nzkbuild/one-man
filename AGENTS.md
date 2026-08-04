@@ -34,6 +34,7 @@ install.manifest.json  # the 6 plugins + 13 design skills to reproduce per machi
   annotated tag on a green commit, rollback drill documented.
 - **ADRs**: every architectural decision gets a doc in `docs/architecture/` —
   `ADR-001-<topic>.md` (what chosen, alternatives, why) in the same commit.
+  The 5-line lightweight template lives at `templates/ADR-template.md`.
 - **Plan discipline**: update plan checkboxes in the SAME commit as the work.
   Never mark a partial item `[x]` — leave `[ ]` with a deferral note.
 

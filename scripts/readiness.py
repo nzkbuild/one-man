@@ -79,11 +79,17 @@ def assess() -> dict:
         ok = False
         reasons.append("high-severity open drift")
 
-    # 6. version consistency
-    code, out = _run(["bash", "claude-health.sh"])
-    if code != 0:
+    # 6. version consistency (python-native — no bash subprocess dependency)
+    try:
+        import json as _j
+        pkg = _j.loads((REPO / "package.json").read_text(encoding="utf-8"))["version"]
+        ctl = _j.loads((REPO / "one-man.controls.json").read_text(encoding="utf-8"))["version"]
+        if pkg != ctl:
+            ok = False
+            reasons.append(f"version mismatch: package={pkg} controls={ctl}")
+    except Exception:
         ok = False
-        reasons.append("health check failed (version/YAML consistency)")
+        reasons.append("version consistency check failed (unreadable policies)")
 
     return {"ready": ok, "reasons": reasons}
 
