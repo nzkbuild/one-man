@@ -67,6 +67,14 @@ CI validates install on `ubuntu-latest` + `windows-latest` (`.github/workflows/v
 - Windows: wrappers are bash; install.ps1 handles the Windows path/merge flow. The `.env`/`.` glob deny rules use `*` wildcards (glob, not regex).
 - Cross-platform side effects: `danger-guard` and `dep-guard` are token-aware to avoid blocking legitimate inspection commands (grep for `rm -rf`, doc mentions of `npm install`).
 
+## Architecture
+
+Policy-driven, evidence-backed, knowledge-adaptive:
+`policies/` (versioned behavior) → Policy Runtime (single evaluator) → gates
+→ evidence → lessons → promotion. Debt and drift are policy outputs with
+lifecycles; release readiness aggregates everything into one verdict.
+See `docs/ASSESSMENT-1.6.0-final.md` + `docs/REVIEW-1.6.0-rc.md`.
+
 ## Layout
 
 ```
