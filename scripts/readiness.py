@@ -74,6 +74,18 @@ def assess() -> dict:
         ok = False
         reasons.append("version consistency check failed (unreadable policies)")
 
+    # 4. policy fitness (v1.7.0 M1): zombie policies are a release concern —
+    # a policy that never runs is dead weight the release should not bless.
+    try:
+        sys.path.insert(0, str(REPO / "hooks" / "lib"))
+        import fitness as _fit
+        _zombies = [r for r in _fit.report() if "zombie" in r]
+        if _zombies:
+            ok = False
+            reasons.append(f"{len(_zombies)} zombie polic(y/ies) — no applications; deprecate or wire")
+    except Exception:
+        pass
+
     return {"ready": ok, "reasons": reasons}
 
 

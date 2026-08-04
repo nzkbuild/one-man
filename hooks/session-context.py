@@ -171,6 +171,19 @@ def main():
     except Exception:
         pass
 
+    # --- Policy fitness (v1.7.0 M1): zombie/unhealthy policies are a visible,
+    # deterministic consequence — not a dashboard score. One line per policy. ---
+    try:
+        sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "lib"))
+        import fitness as _fitness
+        _fit_report = _fitness.report()
+        _unhealthy = [r for r in _fit_report if "watch" in r or "zombie" in r]
+        if _unhealthy:
+            parts.append("# Policy fitness — unhealthy (deterministic consequence)\n"
+                         + "\n".join(f"- {r}" for r in _unhealthy[:5]))
+    except Exception:
+        pass
+
     # --- Project CLAUDE.md (the richest instruction file) ---
     claude_md = os.path.join(cwd, "CLAUDE.md")
     cm_text = read_text(claude_md).strip()
