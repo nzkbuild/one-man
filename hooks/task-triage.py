@@ -147,12 +147,20 @@ def main():
     ttype, reason = classify(prompt)
     risk = classify_risk(prompt, ttype)
     # v1.7.0 M1: situation recognition (context, not just type)
+    _sit_class = "brownfield"
+    _baseline_note = ""
     try:
         sys.path.insert(0, str(Path(__file__).parent / "lib"))
         import situations as _sit
         _sit_class = _sit.classify_situation(prompt, _sit.repo_state(Path.cwd()))
+        # v1.7.0 M2: verified baseline — ground the briefing in reality
+        import baseline as _bl
+        _bs = _bl.baseline(Path.cwd())
+        _baseline_note = (f"Verified baseline: branch={_bs['git']['branch']} "
+                          f"dirty={_bs['git']['dirty']} tests_passing={_bs['tests']['passing']} "
+                          f"debt={_bs['debt_drift']['debt']} drift={_bs['debt_drift']['drift']}")
     except Exception:
-        _sit_class = "brownfield"
+        pass
     flow = load_flow()
     skills = skills_for(ttype, flow)
 
@@ -191,6 +199,7 @@ def main():
         f"Type: {ttype}  (matched: {reason})",
         f"Risk: {risk}",
         f"Situation: {_sit_class}",
+        f"{_baseline_note}",
     ]
     if skills:
         lines.append(f"Skills to invoke: {', '.join(skills)}")
