@@ -163,7 +163,7 @@ PROMPT
 - **M5:** ✅ DONE — scripts/drift-check.py (classification/severity/owner/affected-artifacts/sync-action across implementation, config, docs, plans, ADRs; verify_and_close; high-severity open blocks in CI). 5 assertions; 26/26 runner.
 - **M6:** ✅ DONE — scripts/docs-sync.py (change -> artifacts needing sync: README/CHANGELOG/plans/architecture/AGENTS, deduped, recorded); templates/ADR-template.md (5-line lightweight ADR). 7 assertions; 27/27 runner.
 - **M7:** ✅ DONE — scripts/promote.py (propose->validate->fitness->approve->promote, traceable; trust hierarchy gates auto-approval — official/evidence auto, community/AI need human; evidence alone never promotes). 9 assertions; 28/28 runner.
-- **M8:** readiness aggregates gates+debt+drift; 21+ self-checks, CI green both OSes, privacy clean, plan-check `[x]`.
+- **M8:** ✅ DONE — scripts/readiness.py (aggregates self-checks + plan-check + policy validity + high-risk debt + high-severity drift + health into READY/NOT-READY verdict); wired into pre-push as the final gate. 28/28 runner.
 
 ## 11. Risks
 
