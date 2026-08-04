@@ -4,7 +4,7 @@ Before ANY plan, verify the actual repo state — never assume. The baseline
 grounds the engineering assignment in reality:
   - repository + branch state (branch, dirty, commits ahead/behind)
   - existing failures (tests, build, lint, types — the current red state)
-  - unfinished work (uncommitted, TODO markers, unmerged branches)
+  - unfinished work (uncommitted, deferred-work markers, unmerged branches)
   - debt + drift (the policy outputs from v1.6.0)
   - documentation-vs-implementation conflicts (drift)
 
