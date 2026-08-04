@@ -12,7 +12,7 @@ Tracks meaningful engineering OUTCOMES per policy, not generic counters:
 Fitness verdict (per policy):
   healthy   — low override/false-positive rate, recent activity
   watch     — rising friction (overrides/false-positives up)
-  zombie    — no applications in N sessions → deprecation candidate
+  zombie    - no applications in N sessions - deprecation candidate
 
 Constitution: engineering behaviour must never change silently. Fitness makes
 policy health observable; a policy cannot silently rot.
