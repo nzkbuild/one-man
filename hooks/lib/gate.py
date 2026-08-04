@@ -39,9 +39,15 @@ def _satisfied(rec) -> tuple:
         return True, [f"override: {rec['override']}"]
 
     evidence = rec.get("evidence", [])
-    passed_tests = [e for e in evidence if e.get("kind") == "tests" and e.get("result") == "passed"]
+    # v1.7.0 M2: obligation proof — a passed test satisfies the obligation ONLY
+    # when it is capability-tied (which capability produced it). Evidence
+    # without a capability is unproven provenance.
+    passed_tests = [e for e in evidence
+                    if e.get("kind") == "tests" and e.get("result") == "passed"
+                    and e.get("capability")]
     if not passed_tests:
-        reasons.append("no passed test evidence — the suite must pass for this risk level")
+        reasons.append("no capability-tied passed test evidence — the suite must pass, "
+                       "recorded by a real capability, for this risk level")
         return False, reasons
 
     # Staleness: any file referenced by the LATEST passing evidence changed since?

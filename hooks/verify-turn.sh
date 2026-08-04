@@ -73,7 +73,9 @@ try:
     ev.append_evidence("current", "tests",
                        "failed" if failed == "1" else "passed",
                        exit_code=2 if failed == "1" else 0,
-                       files=files)
+                       files=files,
+                       capability="verify-turn",
+                       obligation="suite passes")
 except Exception:
     pass
 PYEOF
