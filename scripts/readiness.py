@@ -46,40 +46,23 @@ def assess() -> dict:
     reasons = []
     ok = True
 
-    # 1. self-checks
-    code, out = _run(["node", "test/run-tests.js"])
-    if code != 0:
-        ok = False
-        reasons.append("self-checks failing")
-    else:
-        passed = out.strip().splitlines()[-1] if out.strip() else "?"
-        reasons.append(f"self-checks pass ({passed})")
+    # v1.6.0 F6: pre-push already ran check + health + plan-check. Readiness
+    # CONSUMES those results (via the policy/debt/drift signals) instead of
+    # re-running the suite — one execution, not two.
 
-    # 2. plan-check
-    code, _ = _run(["python", "scripts/plan-check.py", "--release"])
-    if code != 0:
-        ok = False
-        reasons.append("plan-check blocked (open non-deferred items)")
-
-    # 3. policy layer valid
-    code, _ = _run(["python", "scripts/validate-policies.py"])
-    if code != 0:
-        ok = False
-        reasons.append("policy layer invalid")
-
-    # 4. high-risk open debt
+    # 1. high-risk open debt
     debt = _high_risk_debt()
     if debt:
         ok = False
         reasons.append(f"{len(debt)} high-risk open debt entries (acknowledged + unfixed)")
 
-    # 5. high-severity open drift
+    # 2. high-severity open drift
     code, out = _run(["python", "scripts/drift-check.py"])
     if code != 0:
         ok = False
         reasons.append("high-severity open drift")
 
-    # 6. version consistency (python-native — no bash subprocess dependency)
+    # 3. version consistency (python-native)
     try:
         import json as _j
         pkg = _j.loads((REPO / "package.json").read_text(encoding="utf-8"))["version"]

@@ -34,10 +34,19 @@ HOME = Path(os.path.expanduser("~"))
 PROMO_DIR = HOME / ".claude" / "promotions"
 POLICY_DIR = Path(__file__).parent.parent
 
-# Trust hierarchy (refinement 2): 1 highest, 7 lowest.
-# A proposal's trust level gates auto-approval: only evidence-backed (5) and
-# above may auto-approve; community (6) and AI (7) always need human approval.
-AUTO_APPROVE_TRUST = {3, 4, 5}  # official specs/docs + verified evidence
+
+def _load_trust():
+    try:
+        p = POLICY_DIR / "policies" / "trust.json"
+        if p.exists():
+            d = json.loads(p.read_text(encoding="utf-8"))
+            return d.get("auto_approve", [])
+    except Exception:
+        pass
+    return []
+
+# Trust hierarchy (v1.6.0 F7): read from the VERSIONED POLICY (policies/trust.json),
+# not code. 1 highest, 7 lowest. Auto-approve only 3-5 (official + evidence).
 
 
 def _dir() -> Path:
@@ -98,7 +107,8 @@ def approve(name: str, auto: bool = False) -> str:
         d["approved_by"] = "human"
         p.write_text(json.dumps(d, indent=2), encoding="utf-8")
         return "approved-by-human"
-    if d.get("trust") in AUTO_APPROVE_TRUST:
+    _trust = _load_trust()
+    if d.get("trust") in _trust:
         d["status"] = "approved"
         d["approved_at"] = time.time()
         d["approved_by"] = "auto"

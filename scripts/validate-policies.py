@@ -12,11 +12,13 @@ import sys
 from pathlib import Path
 
 REPO = Path(__file__).parent.parent
-POLICY_FILES = ["one-man.controls.json", "skills.flow.json"]
+POLICY_FILES = ["one-man.controls.json", "skills.flow.json", "policies/obligations.json", "policies/trust.json"]
 # controls.json is a strict schema; flow.json is schema-free (dynamic task-type
 # keys: bug/feature/refactor/...) — validate only version + structure there.
 KNOWN_KEYS = {
     "one-man.controls.json": {"version", "policy_version", "description", "controls", "lifecycle"},
+    "policies/obligations.json": {"policy_version", "description", "obligations"},
+    "policies/trust.json": {"policy_version", "description", "levels", "auto_approve"},
 }
 FLOW_SCHEMA_FREE = {"skills.flow.json"}
 

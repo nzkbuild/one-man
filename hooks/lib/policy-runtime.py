@@ -29,15 +29,12 @@ from pathlib import Path
 HOME = Path(os.path.expanduser("~"))
 REPO = Path(__file__).parent.parent.parent
 
-# ---- obligations by task type (the engineering obligations map) ----
-OBLIGATIONS = {
-    "bug": ["regression test (failed before, passes now)"],
-    "refactor": ["baseline tests green before+after", "behavior unchanged"],
-    "feature": ["tests for the new path", "build green"],
-    "question": [],
-    "chore": ["change applied, verified, reversible"],
-    "design": ["design chain followed", "a11y checked"],
-}
+# ---- obligations: from the versioned policy file (one source of truth) ----
+
+def _load_obligations():
+    d = _load_policy("policies/obligations.json")
+    return d.get("obligations", {})
+
 
 # ---- workflow by risk (advisory output; gates enforce) ----
 WORKFLOW = {
@@ -87,8 +84,8 @@ def evaluate(task_record: dict) -> dict:
     flow = _load_flow()
     policy_version = controls.get("policy_version", "unknown")
 
-    # obligations: from the map, or the record's own (already seeded)
-    obligations = task_record.get("obligations") or OBLIGATIONS.get(ttype, [])
+    # obligations: from the policy file (one source of truth), or the record's own
+    obligations = task_record.get("obligations") or _load_obligations().get(ttype, [])
 
     # skills: from flow routing (design chain unwrapped)
     route = flow.get(ttype, flow.get("default", []))
@@ -96,6 +93,14 @@ def evaluate(task_record: dict) -> dict:
         skills = route["chain"]
     else:
         skills = route
+
+    # v1.6.0 F3: fitness writer — record that this policy was applied.
+    try:
+        sys.path.insert(0, str(Path(__file__).parent))
+        import fitness as _fit
+        _fit.record(f"policy-{policy_version}", "applied")
+    except Exception:
+        pass
 
     return {
         "type": ttype,

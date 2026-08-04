@@ -1,0 +1,12 @@
+{
+  "policy_version": "1.6.0",
+  "description": "Engineering obligations by task type. One source of truth, consumed by the Policy Runtime.",
+  "obligations": {
+    "bug": ["regression test (failed before, passes now)"],
+    "refactor": ["baseline tests green before+after", "behavior unchanged"],
+    "feature": ["tests for the new path", "build green"],
+    "question": [],
+    "chore": ["change applied, verified, reversible"],
+    "design": ["design chain followed", "a11y checked"]
+  }
+}
