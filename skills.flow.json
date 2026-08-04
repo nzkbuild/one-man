@@ -1,7 +1,9 @@
 {
   "version": "1.2.0",
-  "description": "The systematic-reuse routing table. Consumed by task-triage (and readable by any skill). Maps every task type to the skills that must run for it — so nothing installed sits idle. Install copies this to ~/.claude/skills.flow.json.",
-  "default": ["pro-workflow"],
+  "description": "The systematic-reuse routing table. Consumed by task-triage (and readable by any skill). Maps every task type to the skills that must run for it \u2014 so nothing installed sits idle. Install copies this to ~/.claude/skills.flow.json.",
+  "default": [
+    "pro-workflow"
+  ],
   "bug": [
     "superpowers:systematic-debugging",
     "self-evolve"
@@ -26,7 +28,7 @@
     "checkpoint"
   ],
   "design": {
-    "description": "UI/UX work routes through the design skill chain — anti-slop for interfaces.",
+    "description": "UI/UX work routes through the design skill chain \u2014 anti-slop for interfaces.",
     "chain": [
       "brandkit",
       "design-taste-frontend",
@@ -34,14 +36,28 @@
     ],
     "variants": {
       "industrial": "industrial-brutalist-ui",
-      "imagegen": ["imagegen-frontend-web", "imagegen-frontend-mobile"]
+      "imagegen": [
+        "imagegen-frontend-web",
+        "imagegen-frontend-mobile"
+      ]
     }
   },
   "triggers": {
-    "phase-boundary": ["audit"],
-    "correction": ["self-evolve"],
-    "new-dependency": ["dep-audit"],
-    "milestone": ["checkpoint"],
-    "turn-end": ["superpowers:verification-before-completion"]
-  }
+    "phase-boundary": [
+      "audit"
+    ],
+    "correction": [
+      "self-evolve"
+    ],
+    "new-dependency": [
+      "dep-audit"
+    ],
+    "milestone": [
+      "checkpoint"
+    ],
+    "turn-end": [
+      "superpowers:verification-before-completion"
+    ]
+  },
+  "policy_version": "1.6.0"
 }

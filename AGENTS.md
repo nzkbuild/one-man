@@ -34,8 +34,33 @@ install.manifest.json  # the 6 plugins + 13 design skills to reproduce per machi
   annotated tag on a green commit, rollback drill documented.
 - **ADRs**: every architectural decision gets a doc in `docs/architecture/` —
   `ADR-001-<topic>.md` (what chosen, alternatives, why) in the same commit.
+  The 5-line lightweight template lives at `templates/ADR-template.md`.
 - **Plan discipline**: update plan checkboxes in the SAME commit as the work.
   Never mark a partial item `[x]` — leave `[ ]` with a deferral note.
+
+## Architecture (v1.6.0 — Policy-Driven Engineering Operating System)
+
+```
+PRINCIPLES (stable) -> VERSIONED POLICIES (policies/ + controls + flow)
+  -> KNOWLEDGE (advisory; promotion-gated) -> POLICY RUNTIME (evaluates)
+  -> AUTONOMOUS EXECUTION (gates; debt/drift/docs decided)
+  -> VERIFICATION (evidence) -> LESSONS -> IMPROVEMENT (promotion)
+```
+
+- **Policies drive behavior** (never documentation): `policies/obligations.json`
+  (obligations by task type), `policies/trust.json` (knowledge trust hierarchy),
+  `one-man.controls.json` (control criticality), `skills.flow.json` (routing).
+  All versioned + validated by `scripts/validate-policies.py` in CI.
+- **Policy Runtime** (`hooks/lib/policy-runtime.py`): the single evaluation
+  path — consumes policies + evidence + lessons, produces the deterministic
+  execution plan. Task-triage feeds it.
+- **Debt** (`hooks/lib/debt.py`): auto-created from findings, lifecycle-managed.
+- **Drift** (`scripts/drift-check.py`): detects divergence across impl/docs/
+  config/policies; CI-enforced.
+- **Promotion** (`scripts/promote.py`): knowledge never silently overwrites
+  policy — evidence-backed, trust-gated, traceable.
+- **Readiness** (`scripts/readiness.py`): aggregates debt+drift+version into
+  the release verdict; wired into pre-push.
 
 ## Commands
 

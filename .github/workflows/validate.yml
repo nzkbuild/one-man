@@ -24,6 +24,10 @@ jobs:
         run: for f in hooks/test_*.py; do python3 "$f"; done
       - name: Plan-check (open items must not ship under a release)
         run: python3 scripts/plan-check.py --release
+      - name: "Anti-drift: high-severity open drift blocks"
+        run: python3 scripts/drift-check.py
+      - name: "Policy layer: versioned + valid (no silent undocumented policy)"
+        run: python3 scripts/validate-policies.py
       - name: "Lesson ledger: unresolved high-risk blocks, learned passes"
         run: python3 scripts/ci-lessons-fixture.py
       - name: "Evidence gate: fixture task must block without proof"

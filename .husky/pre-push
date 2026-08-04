@@ -30,5 +30,11 @@ if ! python scripts/plan-check.py --release >/dev/null 2>&1; then
   exit 1
 fi
 
+# 4. release readiness (aggregates gates + debt + drift)
+if ! python scripts/readiness.py >/dev/null 2>&1; then
+  echo "[pre-push] BLOCKED: release readiness NOT met — fix before pushing."
+  exit 1
+fi
+
 echo "[pre-push] local verification passed — push allowed."
 exit 0

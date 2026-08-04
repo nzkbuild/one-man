@@ -5,6 +5,36 @@ All notable changes to one-man. Format: Keep a Changelog
 
 ## [Unreleased]
 
+## [1.6.0] - 2026-08-04
+
+### Added — Policy-Driven Engineering Operating System
+- **Policy layer** (M1): policy_version on all policies; validate-policies.py
+  (parse + version + strict-schema) enforced in CI — the constitution's
+  "no silent undocumented policy".
+- **Policy Fitness** (M2): per-policy outcomes (applications/successes/
+  regressions/overrides/false-positives/maintenance) + healthy/watch/zombie.
+- **Policy Runtime** (M3): the single engineering evaluation path — consumes
+  policies + evidence + lessons, produces the deterministic execution plan.
+  Parity-tested against v1.5.x hooks.
+- **Technical debt governance** (M4): debt as a policy output — auto-created
+  from findings, classified, lifecycle (open->acknowledged->fixed->expired),
+  blocks release only when acknowledged+unfixed+high-risk.
+- **Anti-drift** (M5): drift detection across implementation/docs/plans/
+  config/policies — classified, severity, owner, sync action, verified closure.
+- **Progressive docs + lightweight ADR** (M6): change->artifact sync decision;
+  5-line ADR template. (docs-sync merged into drift-check in review.)
+- **Promotion gate** (M7): knowledge->evidence->validation->fitness->approval
+  ->versioned policy, traceable; trust hierarchy (policies/trust.json).
+- **Release readiness** (M8): aggregates debt + drift + version into
+  READY/NOT-READY; wired into pre-push.
+
+### Changed
+- Policies now drive behavior from `policies/` (obligations.json, trust.json) —
+  not code.
+- Task-triage feeds the Policy Runtime (single evaluation path).
+- Review-gate magic-number class fix (named constants excluded).
+
+
 ## [1.5.1] - 2026-08-04
 
 ### Added

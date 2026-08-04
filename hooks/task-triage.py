@@ -149,23 +149,25 @@ def main():
     flow = load_flow()
     skills = skills_for(ttype, flow)
 
-    # v1.5.0 M3: seed the per-task evidence record (type/risk/obligations).
-    # Obligations by task type — what "done" must prove.
-    _OBLIGATIONS = {
-        "bug": ["regression test (failed before, passes now)"],
-        "refactor": ["baseline tests green before+after", "behavior unchanged"],
-        "feature": ["tests for the new path", "build green"],
-        "question": [],  # no evidence obligation for a question
-        "chore": ["change applied, verified, reversible"],
-        "design": ["design chain followed", "a11y checked"],
-    }
+    # v1.6.0 F1/F2: the Policy Runtime evaluates (obligations/workflow from the
+    # versioned policies); task-triage feeds it the classification. One source
+    # of truth for obligations = policies/obligations.json (not code).
     try:
         sys.path.insert(0, str(Path(__file__).parent / "lib"))
         import evidence as _ev
+        import policy_runtime as _pr
+        plan = _pr.evaluate({"type": ttype, "risk": risk})
         _ev.write_record("current", {
             "type": ttype, "risk": risk,
-            "obligations": _OBLIGATIONS.get(ttype, []),
+            "obligations": plan["obligations"],
+            "policy_version": plan["policy_version"],
+            "workflow": plan["workflow"],
+            "review_required": plan["review_required"],
         })
+        # v1.6.0 F8: the decision record IS the observability trace.
+        _ev.append_evidence("current", "policy_runtime",
+                            f"plan: {plan['workflow']} review={plan['review_required']}",
+                            exit_code=0)
     except Exception:
         pass
 

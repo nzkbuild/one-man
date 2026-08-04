@@ -1,0 +1,14 @@
+{
+  "policy_version": "1.6.0",
+  "description": "Knowledge trust hierarchy. 1 highest, 7 lowest. Auto-approve only 3-5.",
+  "levels": {
+    "1": "engineering-principles",
+    "2": "versioned-policies",
+    "3": "official-specs-standards",
+    "4": "official-tooling-docs",
+    "5": "verified-empirical-evidence",
+    "6": "community-best-practices",
+    "7": "ai-model-recommendations"
+  },
+  "auto_approve": [3, 4, 5]
+}
