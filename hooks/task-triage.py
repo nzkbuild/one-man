@@ -146,6 +146,13 @@ def main():
 
     ttype, reason = classify(prompt)
     risk = classify_risk(prompt, ttype)
+    # v1.7.0 M1: situation recognition (context, not just type)
+    try:
+        sys.path.insert(0, str(Path(__file__).parent / "lib"))
+        import situations as _sit
+        _sit_class = _sit.classify_situation(prompt, _sit.repo_state(Path.cwd()))
+    except Exception:
+        _sit_class = "brownfield"
     flow = load_flow()
     skills = skills_for(ttype, flow)
 
@@ -156,7 +163,7 @@ def main():
         sys.path.insert(0, str(Path(__file__).parent / "lib"))
         import evidence as _ev
         import policy_runtime as _pr
-        plan = _pr.evaluate({"type": ttype, "risk": risk})
+        plan = _pr.evaluate({"type": ttype, "risk": risk, "situation": _sit_class})
         _ev.write_record("current", {
             "type": ttype, "risk": risk,
             "obligations": plan["obligations"],
@@ -183,6 +190,7 @@ def main():
         "# Task triage (2s)",
         f"Type: {ttype}  (matched: {reason})",
         f"Risk: {risk}",
+        f"Situation: {_sit_class}",
     ]
     if skills:
         lines.append(f"Skills to invoke: {', '.join(skills)}")
