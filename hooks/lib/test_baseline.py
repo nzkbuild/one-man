@@ -22,10 +22,12 @@ def check(name, cond):
     PASS += 1
 
 
-# git state on the real repo (it IS a git repo)
+# git state on the real repo (it IS a git repo).
+# Class fix: CI checks out with a DETACHED HEAD (no branch) — so branch may
+# legitimately be None. The invariant is: is_git True + dirty is a bool.
 git = _bl.git_state()
 check("repo is git", git["is_git"] is True)
-check("branch detected", git["branch"] is not None)
+check("branch is str or None (detached HEAD valid)", git["branch"] is None or isinstance(git["branch"], str))
 check("dirty is a bool", isinstance(git["dirty"], bool))
 
 # non-git dir -> is_git False, no crash
