@@ -59,7 +59,7 @@ fi
 
 # v1.5.0 M3: record test evidence (kind, result, exit code, changed files).
 # This is what "done" must later prove — against the current code state.
-EVID="$( cd "${BASH_SOURCE[0]%/*}" && pwd )/lib/evidence.py"
+EVID="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/lib/evidence.py"
 if [ -n "$PY" ] && [ -f "$EVID" ]; then
   CHANGED_FILES="$(find . -maxdepth 3 \( -name '*.py' -o -name '*.ts' -o -name '*.tsx' -o -name '*.js' \) \
     -newermt '-10 minutes' -not -path './node_modules/*' -not -path './.git/*' 2>/dev/null | head -20)"
@@ -91,7 +91,7 @@ fi
 # Ship-gate (second half of the Verify-turn gate): scan changed source for
 # TODO/FIXME, console.log/debugger, commented-out code, empty catches. Red test
 # suite can't see these. Exit 2 if any are found. Fail-safe: any error -> exit 0.
-SG="$( cd "${BASH_SOURCE[0]%/*}" && pwd )/ship-gate.py"
+SG="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/ship-gate.py"
 if [ -n "$PY" ] && [ -f "$SG" ]; then
   "$PY" "$SG" <<< "$HOOK_INPUT" 2>&1
   SHIP_EXIT=$?
@@ -103,7 +103,7 @@ fi
 # v1.5.0 M4: evidence-aware completion gate. For medium/high-risk tasks, "done"
 # requires non-stale evidence that the obligations were satisfied. Exit 2 blocks
 # completion claims without proof. Fail-safe: any error -> exit 0 (availability).
-GATE="$( cd "${BASH_SOURCE[0]%/*}" && pwd )/lib/gate.py"
+GATE="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/lib/gate.py"
 if [ -n "$PY" ] && [ -f "$GATE" ]; then
   "$PY" "$GATE" 2>&1
   GATE_EXIT=$?
@@ -113,7 +113,7 @@ if [ -n "$PY" ] && [ -f "$GATE" ]; then
 fi
 
 # v1.7.0 M7: anti-slop outcome review — blocking classes exit 2
-AS="$( cd "${BASH_SOURCE[0]%/*}" && pwd )/lib/anti-slop.py"
+AS="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/lib/anti-slop.py"
 if [ -n "$PY" ] && [ -f "$AS" ]; then
   "$PY" "$AS" 2>&1
   AS_EXIT=$?

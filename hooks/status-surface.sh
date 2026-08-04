@@ -1,8 +1,6 @@
 #!/usr/bin/env bash
-# SessionStart hook — verifies hook scripts exist and are parseable.
-# Runs after session-context.sh so the model sees findings on prompt one.
-#
-# FAIL-SAFE: any error → exit 0.
+# SessionStart hook — visible system status (feedback surface).
+# Fail-safe: any error -> exit 0 silent.
 
 set +e
 
@@ -13,7 +11,7 @@ HOOK_INPUT="$(cat)"
 export HOOK_INPUT
 
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-SCRIPT="$SCRIPT_DIR/hook-health.py"
+SCRIPT="$SCRIPT_DIR/status-surface.py"
 [ -f "$SCRIPT" ] || exit 0
 
 "$PY" "$SCRIPT" 2>/dev/null

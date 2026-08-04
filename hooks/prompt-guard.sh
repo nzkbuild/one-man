@@ -20,7 +20,8 @@ PY="$(command -v python || command -v python3 || true)"
 HOOK_INPUT="$(cat)"
 export HOOK_INPUT
 
-CLAUDE_HOOK_SCRIPT="$( cd "${BASH_SOURCE[0]%/*}" && pwd )/prompt-guard.py"
+CLAUDE_HOOK_SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+SCRIPT="$SCRIPT_DIR/prompt-guard.py"
 [ -f "$CLAUDE_HOOK_SCRIPT" ] || exit 0
 
 "$PY" "$CLAUDE_HOOK_SCRIPT" 2>/dev/null

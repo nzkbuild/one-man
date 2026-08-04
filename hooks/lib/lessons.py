@@ -40,8 +40,8 @@ import os
 import time
 from pathlib import Path
 
-HOME = Path(os.path.expanduser("~"))
-LESSONS_DIR = HOME / ".claude" / "lessons"
+from state import migrate, state_dir
+
 MAX_LESSONS = 30
 
 # Lifecycle states, ordered. A lesson advances via set_status().
@@ -49,12 +49,23 @@ STATUSES = ("observed", "confirmed", "generalized", "enforced", "tested",
             "closed", "dismissed")
 
 
+LESSONS_DIR = None  # test override; None -> per-project state dir
+
+
 def _dir() -> Path:
+    if LESSONS_DIR is not None:
+        try:
+            LESSONS_DIR.mkdir(parents=True, exist_ok=True)
+        except Exception:
+            pass
+        return LESSONS_DIR
+    migrate("lessons", Path(os.path.expanduser("~")) / ".claude" / "lessons")
+    d = state_dir("lessons")
     try:
-        LESSONS_DIR.mkdir(parents=True, exist_ok=True)
+        d.mkdir(parents=True, exist_ok=True)
     except Exception:
         pass
-    return LESSONS_DIR
+    return d
 
 
 def _stable_id(violation: str) -> str:

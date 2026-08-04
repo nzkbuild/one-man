@@ -24,18 +24,29 @@ import os
 import time
 from pathlib import Path
 
-HOME = Path(os.path.expanduser("~"))
-FITNESS_DIR = HOME / ".claude" / "fitness"
+from state import migrate, state_dir
+
 ZOMBIE_SESSIONS = 10  # no applications for 10 sessions -> zombie
 WATCH_RATE = 0.3      # override+false-positive rate above 30% -> watch
 
 
+FITNESS_DIR = None  # test override; None -> per-project state dir
+
+
 def _dir() -> Path:
+    if FITNESS_DIR is not None:
+        try:
+            FITNESS_DIR.mkdir(parents=True, exist_ok=True)
+        except Exception:
+            pass
+        return FITNESS_DIR
+    migrate("fitness", Path(os.path.expanduser("~")) / ".claude" / "fitness")
+    d = state_dir("fitness")
     try:
-        FITNESS_DIR.mkdir(parents=True, exist_ok=True)
+        d.mkdir(parents=True, exist_ok=True)
     except Exception:
         pass
-    return FITNESS_DIR
+    return d
 
 
 def _path(policy: str) -> Path:
@@ -104,7 +115,7 @@ def report() -> list:
     """
     out = []
     try:
-        for p in sorted(FITNESS_DIR.glob("*.json")):
+        for p in sorted(_dir().glob("*.json")):
             try:
                 d = json.loads(p.read_text(encoding="utf-8"))
                 total = d.get("applications", 0) or 1

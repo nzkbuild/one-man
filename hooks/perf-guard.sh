@@ -2,7 +2,8 @@
 # PostToolUse hook wrapper — perf-guard.py (perf anti-pattern nudges).
 set +e
 
-SCRIPT="$( cd "${BASH_SOURCE[0]%/*}" && pwd )/perf-guard.py"
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+SCRIPT="$SCRIPT_DIR/perf-guard.py"
 INPUT="$(cat)"
 
 if [ -n "$INPUT" ]; then

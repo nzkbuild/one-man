@@ -2,7 +2,8 @@
 # SessionStart hook wrapper — hotspot-report.py (behavioral feedback).
 set +e
 
-SCRIPT="$( cd "${BASH_SOURCE[0]%/*}" && pwd )/hotspot-report.py"
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+SCRIPT="$SCRIPT_DIR/hotspot-report.py"
 INPUT="$(cat)"
 
 if [ -n "$INPUT" ]; then
