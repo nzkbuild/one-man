@@ -42,21 +42,37 @@ GUIDE = [
 
 
 def review_file(path: Path, rel: Path) -> tuple:
-    """Return (blocking, guide) anti-slop findings for one file."""
+    """Return (blocking, guide) anti-slop findings for one file.
+
+    Class fix (v1.7.0 review): strings/docstrings/fixtures are DATA, not
+    defects — a docstring DESCRIBING placeholder content, or a fixture
+    containing the literal "placeholder", must not flag. Strip quoted
+    strings before matching (same token-aware principle as danger-guard).
+    """
     try:
         text = path.read_text(encoding="utf-8", errors="replace")
     except OSError:
         return [], []
     blocking, guide = [], []
+    # code_only: strings removed so pattern words in literals/docs don't fire.
+    # SECRETS scan the RAW text — a hardcoded credential inside a string
+    # literal is still a real defect (the one class where strings ARE the risk).
+    code_only = re.sub(r"('[^']*'|\"\"\"[\s\S]*?\"\"\"|\"[^\"]*\")",
+                       lambda m: " " * len(m.group(1)), text)
 
     for label, pat in BLOCKING:
-        for m in list(pat.finditer(text))[:2]:
+        if label == "placeholder content" or label == "generic AI doc":
+            scan = code_only
+        else:
+            scan = text  # stubs/catches/tests are structural, not in strings
+        for m in list(pat.finditer(scan))[:2]:
             line = text[: m.start()].count("\n") + 1
             blocking.append(f"{rel}:{line} anti-slop: {label}")
             break
 
     for label, pat in GUIDE:
-        for m in list(pat.finditer(text))[:2]:
+        scan = text if label == "hardcoded value" else code_only
+        for m in list(pat.finditer(scan))[:2]:
             line = text[: m.start()].count("\n") + 1
             guide.append(f"{rel}:{line} consider: {label}")
             break
