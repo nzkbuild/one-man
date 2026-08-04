@@ -157,7 +157,7 @@ PROMPT
 ## 10. Acceptance criteria
 
 - **M1:** ✅ DONE — policy_version added to controls.json + flow.json; scripts/validate-policies.py (parse + version + strict-schema keys for controls, structure-only for flow); CI job added. 4 assertions; 22/22 runner.
-- **M2:** fitness counters update on fire/override/regression; zombie detection; report. 6 assertions.
+- **M2:** ✅ DONE — hooks/lib/fitness.py (applications/successes/regressions/overrides/false_positives/maintenance per policy; healthy/watch/zombie verdict; one-line report). 7 assertions; 23/23 runner.
 - **M3:** policy_runtime() parity with current hooks (same verdicts); deterministic. 6 assertions.
 - **M4:** debt auto-created, classified, lifecycle, expires, blocks only acknowledged+unfixed+high-risk at release. 7 assertions.
 - **M5:** drift classified (severity/owner/artifacts/sync-action); verified→closed; approval-to-skip recorded. 6 assertions.
