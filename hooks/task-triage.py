@@ -159,6 +159,13 @@ def main():
         _baseline_note = (f"Verified baseline: branch={_bs['git']['branch']} "
                           f"dirty={_bs['git']['dirty']} tests_passing={_bs['tests']['passing']} "
                           f"debt={_bs['debt_drift']['debt']} drift={_bs['debt_drift']['drift']}")
+        # v1.7.0 M3: the synthesized engineering assignment (sequenced plan)
+        import assignment as _as
+        _assign = _as.synthesize(_sit_class, _bs, {"type": ttype, "risk": risk})
+        _plan_note = ("Engineering plan: " + " -> ".join(_assign["workstreams"])
+                      + " | acceptance: " + "; ".join(_assign["acceptance"][:3]))
+    except Exception:
+        _plan_note = ""
     except Exception:
         pass
     flow = load_flow()
@@ -200,6 +207,7 @@ def main():
         f"Risk: {risk}",
         f"Situation: {_sit_class}",
         f"{_baseline_note}",
+        f"{_plan_note}",
     ]
     if skills:
         lines.append(f"Skills to invoke: {', '.join(skills)}")
