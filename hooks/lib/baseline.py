@@ -74,7 +74,7 @@ def unfinished_work(cwd: Path = None) -> list:
     if code == 0 and out.strip():
         files = [ln.split()[-1] for ln in out.splitlines() if ln.strip()]
         signals.append(f"uncommitted: {len(files)} file(s) modified")
-    # TODO markers in source (bounded scan)
+    # deferred-work markers in source (bounded scan)
     todo = 0
     try:
         for p in list(cwd.glob("*.py")) + list((cwd / "hooks" / "lib").glob("*.py")):

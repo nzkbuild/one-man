@@ -82,8 +82,13 @@ def review_file(p: Path, rel: Path):
         blocking.append(f"{rel}:{line_no} bare except — add handling or logging")
         break
 
-    # TODO left in changed code — blocking (dead-end debt)
-    for m in TODO.finditer(text):
+    # TODO left in changed code — blocking (dead-end debt).
+    # Class fix: a TODO inside a STRING LITERAL ("TODO" as a pattern being
+    # checked) is data, not a left marker. Strip quoted strings before matching
+    # (same token-aware principle as danger-guard) so legitimate pattern checks
+    # like `if "TODO" in ln` don't false-fire.
+    code_only = re.sub(r"('[^']*'|\"[^\"]*\")", lambda m: " " * len(m.group(1)), text)
+    for m in TODO.finditer(code_only):
         line_no = text[: m.start()].count("\n") + 1
         blocking.append(f"{rel}:{line_no} TODO/FIXME left in changed code")
         break
