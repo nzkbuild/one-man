@@ -52,6 +52,7 @@ Run Copy-Item (Join-Path $Repo "hooks\*.sh") (Join-Path $ClaudeHome "hooks\") -F
 Run Copy-Item (Join-Path $Repo "hooks\*.py") (Join-Path $ClaudeHome "hooks\") -Force
 Run Copy-Item (Join-Path $Repo "hooks\*.mjs") (Join-Path $ClaudeHome "hooks\") -Force
 Run Copy-Item (Join-Path $Repo "hooks\test_*.py") (Join-Path $ClaudeHome "hooks\") -Force
+Run Copy-Item (Join-Path $Repo "hooks\lib\*.py") (Join-Path $ClaudeHome "hooks\lib\") -Force
 
 # ---------- Step 4: skills (8 discipline) ----------
 Say "Install discipline skills (8)"

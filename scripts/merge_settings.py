@@ -58,15 +58,12 @@ def main():
 
     # Order matters: matcher specificity. One-man hook map.
     SCRIPTS = [
-        # SessionStart: memory context
-        ("SessionStart", "startup", ["session-context.sh"]),
-        ("SessionStart", "resume", ["session-context.sh"]),
-        ("SessionStart", "compact", ["session-context.sh"]),
-        # SessionStart: health + audit
-        ("SessionStart", "startup", ["settings-validate.sh", "project-audit.sh", "hook-health.sh", "hotspot-report.sh"]),
-        ("SessionStart", "resume", ["settings-validate.sh", "project-audit.sh", "hook-health.sh"]),
-        # SessionStart: cache heal (node)
-        ("SessionStart", "startup|resume", ["context-mode-cache-heal.mjs"]),
+        # SessionStart: memory context (deduped — one group, all matchers)
+        ("SessionStart", "startup|resume|compact", ["session-context.sh"]),
+        # SessionStart: health + audit + hotspot (once per start)
+        ("SessionStart", "startup|resume", ["settings-validate.sh", "project-audit.sh", "hook-health.sh", "hotspot-report.sh"]),
+        # SessionStart: visible status surface (feedback)
+        ("SessionStart", "startup|resume", ["context-mode-cache-heal.mjs", "status-surface.sh"]),
         # Mid-turn
         ("PreCompact", "*", ["precompact-checkpoint.sh"]),
         ("UserPromptSubmit", "*", ["task-triage.sh", "prompt-guard.sh", "phase-gate.sh"]),
@@ -92,7 +89,14 @@ def main():
         up[key] = merged
     new["permissions"] = up
 
-    # 3. everything else (env, model, baseURL, plugins) preserved automatically.
+    # 3. statusLine: set only if absent (user may have their own).
+    if "statusLine" not in existing:
+        new["statusLine"] = {
+            "type": "command",
+            "command": f'python "{os.path.join(CLAUDE_HOME, "hooks", "statusline.py")}"',
+        }
+
+    # 4. everything else (env, model, baseURL, plugins) preserved automatically.
 
     out = os.path.join(CLAUDE_HOME, "settings.json")
     json.dump(new, open(out, "w"), indent=2)

@@ -3,7 +3,8 @@
 # Captures stdin (HOOK_INPUT payload), calls the brain, propagates exit code.
 set +e
 
-SCRIPT="$( cd "${BASH_SOURCE[0]%/*}" && pwd )/review-gate.py"
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+SCRIPT="$SCRIPT_DIR/review-gate.py"
 INPUT="$(cat)"
 
 if [ -n "$INPUT" ]; then

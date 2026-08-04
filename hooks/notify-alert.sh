@@ -11,7 +11,8 @@ PY="$(command -v python || command -v python3 || true)"
 HOOK_INPUT="$(cat)"
 export HOOK_INPUT
 
-SCRIPT="$( cd "${BASH_SOURCE[0]%/*}" && pwd )/notify-alert.py"
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+SCRIPT="$SCRIPT_DIR/notify-alert.py"
 [ -f "$SCRIPT" ] || exit 0
 
 "$PY" "$SCRIPT"

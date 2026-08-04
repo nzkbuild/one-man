@@ -34,9 +34,38 @@ except Exception:
 if not cwd.is_dir():
     sys.exit(0)
 
+# Per-project short TTL cache (v1.7.1 perf): git subprocess spawns are the
+# whole cost (~700ms cold on Windows). A SessionStart audit seconds after the
+# previous one (rapid restart) can reuse the result — repo state doesn't move
+# in 10s. ponytail: naive TTL cache; fine until multi-instance racing matters.
+import tempfile
+import time
+
+CACHE = Path(tempfile.gettempdir()) / "one-man-project-audit.json"
+CACHE_TTL = 10  # seconds
+
+
+def _cached():
+    try:
+        if CACHE.is_file() and time.time() - CACHE.stat().st_mtime < CACHE_TTL:
+            d = json.loads(CACHE.read_text(encoding="utf-8"))
+            if d.get("cwd") == str(cwd):
+                return d
+    except Exception:
+        pass
+    return None
+
+
+_GIT_KEY = {"rev-parse": "is-inside-work-tree", "status": "status", "ls-files": "ls-files"}
+
 
 def run(args):
     """Read-only command; returns stdout or None. Never raises."""
+    cached = _cached()
+    if cached and args[0] == "git":
+        key = _GIT_KEY.get(args[1])
+        if key in cached.get("git", {}):
+            return cached["git"][key]
     try:
         r = subprocess.run(args, cwd=cwd, capture_output=True, text=True, timeout=10)
         return r.stdout if r.returncode == 0 else None
@@ -76,10 +105,20 @@ else:
 has_py = any(cwd.glob("*.py")) or (cwd / "app").is_dir() or (cwd / "src").is_dir()
 pkg = cwd / "package.json"
 test_files = []
-for pat in ("test_*.py", "*_test.py", "*.test.ts", "*.test.tsx", "*.test.js", "*.spec.ts"):
-    test_files += list(cwd.rglob(pat))[:1]      # existence check only; keep it cheap
-    if test_files:
-        break
+if pkg.is_file() or has_py:
+    # Pruned walk (v1.7.1 perf): rglob over the whole tree walks node_modules
+    # and .git — seconds on a real repo. os.walk with skips finds a test file
+    # in the first few dirs. Existence check only.
+    _PAT = ("test_", "_test.", ".test.", ".spec.")
+    for _dirpath, _dirs, _files in os.walk(cwd):
+        _dirs[:] = [d for d in _dirs if d not in ("node_modules", ".git", "dist", "build", "venv", ".venv", "__pycache__")]
+        if any(any(p.startswith(("test_",)) or "_test" in p or ".test." in p or ".spec." in p for p in _files)
+               for _ in (0,)):
+            test_files = [True]
+            break
+        if any(any(pat in f for pat in _PAT) for f in _files):
+            test_files = [True]
+            break
 
 if not test_files and (has_py or pkg.is_file()):
     findings.append((1, "**No tests found.** Linting catches syntax, not wrong logic. "
@@ -223,6 +262,20 @@ if in_git and (cwd / ".github").is_dir():
     if not (cwd / ".github" / "CODEOWNERS").is_file():
         findings.append((2, "**No CODEOWNERS.** Create .github/CODEOWNERS so every PR "
                             "gets the right reviewer."))
+
+# persist the git-state snapshot for the TTL cache (never findings — those
+# must always be fresh; only the git subprocess results are reused)
+try:
+    CACHE.write_text(json.dumps({
+        "cwd": str(cwd),
+        "git": {
+            "is-inside-work-tree": in_git,
+            "status": locals().get("dirty", ""),
+            "ls-files": locals().get("tracked", "") or "",
+        },
+    }), encoding="utf-8")
+except Exception:
+    pass
 
 if not findings:
     sys.exit(0)

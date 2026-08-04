@@ -2,7 +2,8 @@
 # Stop hook wrapper — design-review.py (a11y + slop check for design turns).
 set +e
 
-SCRIPT="$( cd "${BASH_SOURCE[0]%/*}" && pwd )/design-review.py"
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+SCRIPT="$SCRIPT_DIR/design-review.py"
 INPUT="$(cat)"
 
 if [ -n "$INPUT" ]; then

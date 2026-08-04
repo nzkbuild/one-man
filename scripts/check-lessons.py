@@ -19,8 +19,20 @@ import os
 import sys
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).parent.parent / "hooks" / "lib"))
+from state import migrate, state_dir  # noqa: E402
+
 HOME = Path(os.path.expanduser("~"))
-LESSONS_DIR = HOME / ".claude" / "lessons"
+
+LESSONS_DIR = None  # test override; None -> per-project state dir
+
+
+def _lessons_dir() -> Path:
+    """Per-project lessons dir, with one-time migration of the legacy global one."""
+    if LESSONS_DIR is not None:
+        return LESSONS_DIR
+    migrate("lessons", HOME / ".claude" / "lessons")
+    return state_dir("lessons")
 
 
 def _find(rel: str) -> bool:
@@ -36,14 +48,15 @@ def _find(rel: str) -> bool:
 
 
 def check():
-    if not LESSONS_DIR.exists():
+    d = _lessons_dir()
+    if not d.exists():
         return []
     # Lifecycle: a lesson is "learned" at enforced/tested/closed; dismissed is
     # closed-by-decision (deliberately no action — not at-risk).
     # observed/confirmed/generalized = recorded but NOT yet prevented.
     LEARNED = {"enforced", "tested", "closed", "dismissed"}
     problems = []
-    for p in sorted(LESSONS_DIR.glob("*.json")):
+    for p in sorted(d.glob("*.json")):
         try:
             les = json.loads(p.read_text(encoding="utf-8"))
         except Exception:

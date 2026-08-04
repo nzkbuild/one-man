@@ -23,8 +23,8 @@ import re
 import time
 from pathlib import Path
 
-HOME = Path(os.path.expanduser("~"))
-DEBT_DIR = HOME / ".claude" / "debt"
+from state import migrate, state_dir
+
 MAX_DEBT = 100
 EXPIRE_RELEASES = 2  # releases without action -> expired
 
@@ -35,12 +35,23 @@ CLASSIFY = {
 }
 
 
+DEBT_DIR = None  # test override; None -> per-project state dir
+
+
 def _dir() -> Path:
+    if DEBT_DIR is not None:
+        try:
+            DEBT_DIR.mkdir(parents=True, exist_ok=True)
+        except Exception:
+            pass
+        return DEBT_DIR
+    migrate("debt", Path(os.path.expanduser("~")) / ".claude" / "debt")
+    d = state_dir("debt")
     try:
-        DEBT_DIR.mkdir(parents=True, exist_ok=True)
+        d.mkdir(parents=True, exist_ok=True)
     except Exception:
         pass
-    return DEBT_DIR
+    return d
 
 
 def _stable_id(file: str, finding: str) -> str:

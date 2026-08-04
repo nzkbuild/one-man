@@ -21,17 +21,28 @@ import os
 import time
 from pathlib import Path
 
-HOME = Path(os.path.expanduser("~"))
-EVIDENCE_DIR = HOME / ".claude" / "evidence"
+from state import migrate, state_dir
+
 MAX_RECORDS = 200
 
 
+EVIDENCE_DIR = None  # test override; None -> per-project state dir
+
+
 def _dir() -> Path:
+    if EVIDENCE_DIR is not None:
+        try:
+            EVIDENCE_DIR.mkdir(parents=True, exist_ok=True)
+        except Exception:
+            pass
+        return EVIDENCE_DIR
+    migrate("evidence", Path(os.path.expanduser("~")) / ".claude" / "evidence")
+    d = state_dir("evidence")
     try:
-        EVIDENCE_DIR.mkdir(parents=True, exist_ok=True)
+        d.mkdir(parents=True, exist_ok=True)
     except Exception:
         pass
-    return EVIDENCE_DIR
+    return d
 
 
 def _path(task_id: str) -> Path:

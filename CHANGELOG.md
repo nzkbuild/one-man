@@ -5,6 +5,33 @@ All notable changes to one-man. Format: Keep a Changelog
 
 ## [Unreleased]
 
+## [1.7.1] - 2026-08-05
+
+### Fixed — Cross-project state bleed + context bloat
+- **Per-project state scoping** (state.py): debt/evidence/fitness/lessons now
+  live under `~/.claude/state/<project-key>/<store>/` — one project's findings
+  no longer bleed into another's baseline. Global policy files unchanged.
+- **Statusline `v?` bug**: version lookup now resolves repo controls →
+  installed controls → package.json (root cause: controls.json was missing
+  from the installed `~/.claude`).
+
+### Added — Visible feedback surface
+- **status-surface.sh** (SessionStart): branded One Man status banner (version,
+  guards wired, open debt, fitness, last gate).
+- **statusline.py** (statusLine): live bottom-bar state per project —
+  `[OK] ONE-MAN v1.7.1 · debt 0 · fit 4H/0W · gate —`.
+
+### Performance
+- **project-audit 710ms → 225ms**: the 3s bottleneck was `cwd.rglob` walking
+  node_modules; replaced with a pruned `os.walk`. Added a 10s TTL git-state
+  cache for rapid restarts.
+- **SessionStart dedup**: 6 hook groups → 3; duplicate session-context +
+  hotspot-report injections eliminated (23 hook runs, was 14 per start).
+- **Unused plugins disabled**: vercel (162MB, 0 uses), rust-analyzer-lsp,
+  typescript-lsp (0 tool calls). Kept superpowers, ponytail, context-mode.
+- **cleanup-local.py**: prune transcripts, old plugin versions, stale state dirs
+  (dry-run default).
+
 ## [1.7.0] - 2026-08-04
 
 ### Added — Autonomous Discovery & Sequencing

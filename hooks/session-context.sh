@@ -16,7 +16,8 @@ PY="$(command -v python || command -v python3 || true)"
 HOOK_INPUT="$(cat)"
 export HOOK_INPUT
 
-SCRIPT="$( cd "${BASH_SOURCE[0]%/*}" && pwd )/session-context.py"
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+SCRIPT="$SCRIPT_DIR/session-context.py"
 [ -f "$SCRIPT" ] || exit 0
 
 "$PY" "$SCRIPT" 2>/dev/null

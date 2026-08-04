@@ -7,9 +7,11 @@ consequence:
   - readiness blocks release when a policy is zombie (never applied)
 """
 import importlib.util
+import sys
 import tempfile
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).parent.parent / "hooks" / "lib"))
 _spec = importlib.util.spec_from_file_location("fit", Path(__file__).parent.parent / "hooks" / "lib" / "fitness.py")
 _fit = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(_fit)

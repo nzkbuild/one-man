@@ -51,6 +51,8 @@ mkdir -p "$CLAUDE_HOME/hooks" "$CLAUDE_HOME/skills" "$CLAUDE_HOME/self" "$CLAUDE
 say "Install hooks (14)"
 cp "$REPO"/hooks/*.sh "$REPO"/hooks/*.py "$REPO"/hooks/*.mjs "$CLAUDE_HOME/hooks/" 2>/dev/null
 cp "$REPO"/hooks/test_*.py "$CLAUDE_HOME/hooks/" 2>/dev/null
+mkdir -p "$CLAUDE_HOME/hooks/lib"
+cp "$REPO"/hooks/lib/*.py "$CLAUDE_HOME/hooks/lib/" 2>/dev/null
 
 # ---------- Step 4: skills (8 discipline) ----------
 say "Install discipline skills (8)"
