@@ -5,6 +5,38 @@ All notable changes to one-man. Format: Keep a Changelog
 
 ## [Unreleased]
 
+## [1.7.0] - 2026-08-04
+
+### Added — Autonomous Discovery & Sequencing
+- **Situation recognition** (situations.py): 8 situations from weak prompts +
+  repo state, specificity-ordered, repo-state override.
+- **Trustworthy baseline** (baseline.py): verified git state, bounded test
+  probe (latency discipline), unfinished work, debt + drift.
+- **Engineering assignment synthesis** (assignment.py): situation + verified
+  baseline -> structured assignment (sequenced workstreams, risks-from-findings,
+  acceptance, DoD, replan triggers).
+- **Capability orchestration** (orchestration.py): full contract per capability
+  (reason, obligation, executed, output, consumer, satisfied, current); gate
+  blocks on unsatisfied obligations; unconsumed (ceremony) detected.
+- **Plan validation + auto-repair** (plan-validator.py): missing deps, wrong
+  ordering, missing baseline repair, missing rollback, unbounded scope, weak
+  acceptance — auto-repaired where deterministic.
+- **Controlled re-planning** (replan.py): re-plan only on verified evidence
+  change; auditable record (what/why/trigger/affected/stale/new-order).
+- **Anti-slop outcome review** (anti-slop.py): stubs, placeholders, generic AI
+  doc, meaningless tests, hardcoded secrets, eval, broad swallow — token-aware
+  (strings are data; secrets scan raw).
+- **Autonomous lifecycle** (test_lifecycle.py): the complete flow proven end to
+  end for 6 situations; different situations -> different workflows.
+- **Debt revalidation** (debt.py): closes stale debt whose finding no longer
+  matches the source (the dogfood class fix).
+
+### Fixed
+- Anti-slop + review-gate token-aware class fixes (string literals are data;
+  secrets scan raw).
+- Debt register revalidates stale false-positive entries.
+
+
 ## [1.6.0] - 2026-08-04
 
 ### Added — Policy-Driven Engineering Operating System
