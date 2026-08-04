@@ -114,3 +114,35 @@ The review itself proved the point: the system's own "documented but not enforce
 ---
 
 ## Release recommendation: **RELEASE CANDIDATE ONLY** (before fixes) → implementing F1–F8 now, then re-review.
+
+
+---
+
+# Re-review (post F1-F8)
+
+All 8 findings fixed and verified:
+- F1 runtime wired (task-triage feeds it) ✅
+- F2 obligations single-source (policies/obligations.json) ✅
+- F3 fitness writers wired ✅
+- F4 docs-sync deleted (drift covers it) ✅
+- F5 drift-check CI step ✅
+- F6 readiness consumes not re-runs ✅
+- F7 trust from policy ✅
+- F8 runtime decision in evidence store ✅
+
+**Verification:** 27/27 self-checks (docs-sync test removed with the deleted script — its coverage lives in drift-check), parity 12/12, triage 18/18, promote 11/11, readiness READY, privacy clean, plan-check 0 open.
+
+**New simplifications from the review (net -1 script, +2 policy files):**
+- docs-sync.py deleted (one 'what must sync?' decision in drift-check)
+- obligations + trust are now POLICY FILES (not code) — the architecture's own rule
+
+**Remaining findings (accepted, minor):**
+- M2's fitness writers are wired to the runtime but not yet to the gates
+  (override/false-positive recording on gate-level is a follow-up — the
+  runtime-level 'applied' recording is live)
+- Skill-invocation proof remains v1.7.0 (agent instrumentation, out of scope)
+- Promotion governance is CLI-integrated but not yet auto-triggered by
+  fitness-watch — acceptable: promotion SHOULD be human-gated at the boundary
+
+**Verdict: APPROVED WITH MINOR CHANGES → APPROVED** (the minor items are
+accepted follow-ups, not release blockers).
