@@ -139,6 +139,15 @@ def main():
         blocking.extend(b)
         guide.extend(g)
 
+    # v1.6.0 M4: blocking findings become engineering debt automatically.
+    try:
+        sys.path.insert(0, str(Path(__file__).parent / "lib"))
+        import debt as _debt
+        for f in blocking:
+            _debt.create(str(rel), f, severity="high", source="review-gate")
+    except Exception:
+        pass
+
     if not blocking and not guide:
         sys.exit(0)
 
