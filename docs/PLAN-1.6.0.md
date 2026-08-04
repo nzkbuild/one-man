@@ -21,13 +21,32 @@
                               false-positives. NEW telemetry store.
 6. POLICY PROMOTION         — knowledge → evidence → validation → regression →
                               fitness → candidate → NEW policy version. Traceable.
-7. POLICY RUNTIME           — decide.py: consumes task+repo+evidence+lessons+
+7. POLICY RUNTIME           — policy-runtime.py: consumes task+repo+evidence+lessons+
                               policies → deterministic execution plan.
 8. AUTONOMOUS EXECUTION     — gates execute; debt/drift/docs-sync/ADR decided.
 9. VERIFICATION             — suite + gates + evidence non-stale → "done" proven.
 10. LESSONS                 — corrections → ledger (lifecycle) → recurrence.
 11. CONTINUOUS IMPROVEMENT  — recurrence/fitness → promotion proposal → regression.
 ```
+
+## 1.5 Every layer must justify its existence
+
+For each layer: responsibility, failure prevented, inputs, outputs, why it exists,
+why it cannot merge. The full justification table:
+
+| Layer | Responsibility | Prevents | Inputs | Outputs | Cannot merge because |
+|---|---|---|---|---|---|
+| Principles | immutable values | policy churn on values | — | stable constraint set | merging into policies would let them drift |
+| Policies | deterministic behavior | behavior drift | principles | versioned rules | merging into runtime would lose traceability |
+| Knowledge | advisory input | AI-whim overwrite | external sources | proposals | merging into policies would lose the promotion gate |
+| Evidence | proof of state | unproven done | actions | decision records | merging into lessons loses per-task state |
+| Fitness | policy health | zombie policies | telemetry | healthy/watch/zombie verdicts | merging into promotion loses continuous signal |
+| Promotion | governed evolution | untraceable change | candidates + validation | new policy versions | merging into knowledge would allow silent overwrite |
+| Runtime | deterministic evaluation | duplicated judgement | policies+evidence+lessons | execution plan | merging into execution loses the single evaluator |
+| Execution | run the gates | manual process | plan | debt/drift/docs/ADR | merging into runtime would couple decision+action |
+| Verification | prove done | false completion | suite+gates+evidence | verified state | merging into execution loses the independent check |
+| Lessons | learning loop | repeated mistakes | corrections | ledger entries | merging into improvement loses the lifecycle |
+| Improvement | evidence-backed evolution | static policy | recurrence+fitness | promotion proposals | merging into lessons loses the governance gate |
 
 ## 2. Engineering rationale (each layer's sole responsibility + the mistake it prevents)
 
@@ -67,9 +86,26 @@ knowledge (seed/community)
 ## 5. Policy fitness lifecycle (layer 5)
 
 - **Telemetry store** (`~/.claude/fitness/<policy>.json`): per-policy counters — fires, regressions, overrides, false-positives, last-seen.
-- Fed by: the runtime (fires), evidence gate (regressions), override path (overrides), lesson ledger (false-positive pattern → policy).
+- Fed by: the Policy Runtime (fires), evidence gate (regressions), override path (overrides), lesson ledger (false-positive pattern → policy).
 - **Fitness verdict:** healthy (low override/false-positive rate) / watch (rising) / zombie (no fires in N sessions → deprecation candidate).
 - **Report:** surfaced at SessionStart (one line) + CI.
+
+
+## 2.5 Trust hierarchy (knowledge is not equally trustworthy)
+
+| Trust level | Source | May propose? | May overwrite policy? |
+|---|---|---|---|
+| 1 (highest) | Engineering Principles | never | never |
+| 2 | Versioned Engineering Policies | — | — (they ARE policy) |
+| 3 | Official specs / language standards | yes | never silently |
+| 4 | Official tooling/framework docs | yes | never silently |
+| 5 | Verified empirical engineering evidence | yes | never silently |
+| 6 | Community best practices | propose only | never |
+| 7 (lowest) | AI model recommendations | propose only | never |
+
+Knowledge produces evidence; evidence qualifies a Policy Candidate; regression +
+fitness validate the candidate; only then may a new policy version be promoted.
+All promotions versioned + traceable.
 
 ## 6. Promotion lifecycle (layer 6)
 
@@ -79,7 +115,7 @@ The governance gate: a promotion candidate requires evidence + regression + fitn
 
 ```
 PROMPT
-  → decide.py (layer 7): type + risk + obligations + review/evidence requirements
+  → policy-runtime.py (layer 7): type + risk + obligations + review/evidence requirements
     from policies + evidence + lessons + repo state
   → EXECUTION (layer 8): gates run; decisions made:
       debt created? (review/ship/perf findings → classified)
@@ -103,6 +139,7 @@ PROMPT
 | Never silently introduce drift | drift decision (NEW) + approval-to-skip recorded |
 | Never silently introduce undocumented policy | policy versioning (NEW) |
 | Never silently discard evidence | evidence store (existing) |
+| **Engineering behaviour must never change silently** | every policy evolution observable, versioned, reproducible, explainable (NEW) |
 
 ## 9. Revised implementation milestones
 
@@ -110,7 +147,7 @@ PROMPT
 |---|---|---|---|
 | M1 | Policy versioning + validation | 2 | controls.json, flow.json, obligations map, CI fixture |
 | M2 | Policy fitness telemetry | 5 | `hooks/lib/fitness.py` (new) + writers |
-| M3 | decide.py — the runtime | 7 | `hooks/lib/decide.py` (new) + parity test |
+| M3 | policy-runtime.py — the Policy Runtime | 7 | `hooks/lib/policy-runtime.py` (new) + parity test |
 | M4 | Debt as policy output | 8 | `hooks/lib/debt.py` (new) + writers (review/ship/perf) |
 | M5 | Drift as policy output | 8 | `scripts/drift-check.py` (new) + classification |
 | M6 | Docs-sync + lightweight ADR | 8 | `scripts/docs-sync.py` (new), ADR template |
@@ -121,7 +158,7 @@ PROMPT
 
 - **M1:** policies versioned; decision record carries version; deprecation/migration tested. 5 assertions.
 - **M2:** fitness counters update on fire/override/regression; zombie detection; report. 6 assertions.
-- **M3:** decide() parity with current hooks (same verdicts); deterministic. 6 assertions.
+- **M3:** policy_runtime() parity with current hooks (same verdicts); deterministic. 6 assertions.
 - **M4:** debt auto-created, classified, lifecycle, expires, blocks only acknowledged+unfixed+high-risk at release. 7 assertions.
 - **M5:** drift classified (severity/owner/artifacts/sync-action); verified→closed; approval-to-skip recorded. 6 assertions.
 - **M6:** docs-sync lists correct artifacts for a change; ADR flagged for architectural. 4 assertions.
@@ -144,7 +181,7 @@ PROMPT
 ## 13. Migration from v1.5.x
 
 - **Backward-compatible:** all v1.5.x hooks/lib keep working; new modules are additive.
-- **Parity test (M3)** guarantees decide() matches current hook verdicts — no behavior change at migration.
+- **Parity test (M3)** guarantees policy_runtime() matches current hook verdicts — no behavior change at migration.
 - **Evidence/lessons/privacy/portability untouched** (per constitution).
 - Rollback: each milestone independently revertible; the parity test is the safety net.
 
@@ -167,7 +204,7 @@ PROMPT
 
 - **"Are 11 layers overkill?"** — They're a mental model with 1 responsibility each; the implementation is 4 modules + 2 scripts. The layers prevent the exact failure of the component-proposal (systems that don't evolve). Kept, minimal.
 - **"Is fitness a dashboard?"** — It's counters + one-line report + zombie detection. Without it, policies can't prove usefulness (the brief's explicit requirement). Kept, minimal.
-- **"Is decide.py redundant?"** — Parity test (M3) proves it matches the hooks; if it duplicates, delete. It adds the statefulness (decision record) that makes fitness/lessons possible. Kept with the test.
+- **"Is policy-runtime.py redundant?"** — Parity test (M3) proves it matches the hooks; if it duplicates, delete. It adds the statefulness (decision record) that makes fitness/lessons possible. Kept with the test.
 - **"Could this be simpler?"** — The v1.5.x foundation is untouched. The additions are the minimum that transforms "automated" into "autonomous + self-adapting": versioning (traceability), fitness (evidence of usefulness), decide (one evaluator), promotion (governance), debt/drift/docs-sync/readiness (policy outputs). Each justified by a specific mistake it prevents (§2).
 
 *End of implementation plan. Architecture approved — ready to implement on your go.*
