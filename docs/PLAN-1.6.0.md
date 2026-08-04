@@ -161,7 +161,7 @@ PROMPT
 - **M3:** policy_runtime() parity with current hooks (same verdicts); deterministic. 6 assertions.
 - **M4:** ✅ DONE — hooks/lib/debt.py (auto-create from findings, classify tech/process/design, lifecycle open->acknowledged->fixed->expired, stable-ID dedupe + recurrence, blocks only ack+unfixed+high at release); review-gate writes blocking findings as debt. 14 assertions; 25/25 runner.
 - **M5:** ✅ DONE — scripts/drift-check.py (classification/severity/owner/affected-artifacts/sync-action across implementation, config, docs, plans, ADRs; verify_and_close; high-severity open blocks in CI). 5 assertions; 26/26 runner.
-- **M6:** docs-sync lists correct artifacts for a change; ADR flagged for architectural. 4 assertions.
+- **M6:** ✅ DONE — scripts/docs-sync.py (change -> artifacts needing sync: README/CHANGELOG/plans/architecture/AGENTS, deduped, recorded); templates/ADR-template.md (5-line lightweight ADR). 7 assertions; 27/27 runner.
 - **M7:** promotion requires evidence+regression+fitness; evidence-alone rejected; traceable. 5 assertions.
 - **M8:** readiness aggregates gates+debt+drift; 21+ self-checks, CI green both OSes, privacy clean, plan-check `[x]`.
 
