@@ -15,7 +15,7 @@ const py = process.platform === "win32" ? "python" : process.env.PYTHON || "pyth
 // Top-level test_*.py + hooks/lib/test_*.py (shared helpers get tested too)
 const top = readdirSync(hooksDir).filter((f) => f.startsWith("test_") && f.endsWith(".py"))
 const lib = readdirSync(join(hooksDir, "lib")).filter((f) => f.startsWith("test_") && f.endsWith(".py"))
-const scriptTests = ["../scripts/test_check_lessons.py", "../scripts/test_lessons_seed.py", "../scripts/ci-lessons-fixture.py"]
+const scriptTests = ["../scripts/test_check_lessons.py", "../scripts/test_lessons_seed.py", "../scripts/ci-lessons-fixture.py", "../scripts/test_validate_policies.py"]
 const tests = [...top, ...lib.map((f) => join("lib", f)), ...scriptTests]
 if (!tests.length) {
   console.error("no test_*.py found in hooks/")

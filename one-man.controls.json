@@ -44,5 +44,11 @@
     "hotspot-report": {
       "criticality": "advisory"
     }
+  },
+  "policy_version": "1.6.0",
+  "lifecycle": {
+    "status": "active",
+    "deprecated": false,
+    "migration_note": null
   }
 }
