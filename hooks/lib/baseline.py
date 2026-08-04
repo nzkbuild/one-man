@@ -67,7 +67,7 @@ def test_state(cwd: Path = None) -> dict:
 
 
 def unfinished_work(cwd: Path = None) -> list:
-    """Uncommitted changes + TODO markers (the unfinished-work signal)."""
+    """Uncommitted changes + deferred-work markers (the unfinished-work signal)."""
     cwd = cwd or REPO
     signals = []
     code, out = _run(["git", "-C", str(cwd), "status", "--porcelain"], cwd=cwd)
