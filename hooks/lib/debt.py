@@ -102,6 +102,39 @@ def _update(did: str, changes: dict) -> bool:
         return False
 
 
+def revalidate(cwd: Path = None):
+    """Close debt whose finding no longer matches the source (the class fix).
+
+    A debt entry records a finding at a point in time. If the source was
+    since fixed (the token-aware review-gate class fix removed false-positive
+    TODO flags), the debt is STALE — it should not linger as open debt.
+    Re-validates each open debt against its recorded file + finding.
+    """
+    cwd = cwd or Path.cwd()
+    import re as _re
+    try:
+        for p in _dir().glob("*.json"):
+            d = json.loads(p.read_text(encoding="utf-8"))
+            if d.get("status") != "open":
+                continue
+            fpath = cwd / d.get("file", "")
+            if not fpath.exists():
+                continue  # file gone — leave for expiry
+            try:
+                src = fpath.read_text(encoding="utf-8")
+            except Exception:
+                continue
+            code_only = _re.sub(r"('[^']*'|\"[^\"]*\")", " ", src)
+            finding = d.get("finding", "")
+            # does the finding's core pattern still exist in code-only?
+            if "TODO" in finding and not _re.search(r"\bTODO\b", code_only):
+                d["status"] = "closed"
+                d["closed_reason"] = "stale: finding no longer matches source"
+                p.write_text(json.dumps(d, indent=2), encoding="utf-8")
+    except Exception:
+        pass
+
+
 def expire_all(version: str):
     """Called at release: bump releases_seen; expire stale open debt."""
     try:
